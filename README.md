@@ -1,30 +1,18 @@
-# RFmix2-Pipeline-to-plot
-Here we present a method to plot the outputs of RFmix version 2
+In this guide, we present a method for plotting the outputs of RFmix version 2. The process begins with a Pipeline.txt file and follows these steps:
 
-starts from Pipeline.txt and follow up
+Author: Alessandro Lisi, Michael Campbell
+(Campbell Computational Genomics LAB @ USC)
 
-###Author "Alessandro Lisi, Michael Campbell"\
-"Campbell Computational Genomics LAB @USC")###
+Pipeline for RFmix 2 and Plotting with Tagore for All Chromosomes
+Prepare Input Dataset:
 
-Pipeline for RFmix 2 and plot with Tagore all thr chrs
+The target file must be in VCF format and phased (not gzipped) and should contain all chromosomes together, with one individual per VCF.
+The reference file must also be in VCF format and phased (not gzipped), but it should be split into chromosomes 1 to 22.
+Sample Map File:
 
-Prepare input dataset:
+Create a sample map file in .ref/.txt format. It should include all individuals from the reference dataset but should not contain the target individuals. The first column should list the individuals in the same order as in the VCF file, and the second column should specify the ancestry based on your own classification (e.g., "Africa").
 
-The target file must to be in vcf and phased(not gzip) all chrs together. one individual per vcf
-
-The reference file must to be in vcf and phased (not gzip) split in chrs 1 to 22. 
-
-In this script Mozabite is used as Target. 
-African, Europe and MiddleEast is used as Reference. 
-For this simulation analysis, we chose the Mozabites because 
-they are a population highly amixed with European, Middle Eastern and Africans
-
-Prepare the samplefile 
-the sample map file in .ref/.txt must contain all the individuals of the dataset used as reference. 
-it must not contain the target individuals. the first column are the individual in the same order 
-of the vcf file. the second column must contain the ancestry based on your own. 
-
-e.g tab delimited
+Example (tab-delimited):
 
 ind1	Africa \
 ind2	Africa \
@@ -37,11 +25,13 @@ ind8	MiddleEast \
 ind9	MiddleEast 
 
 
-We suggest to run RFMIX2 just on individual at a time. you can use loop to include all individuals
-of target into the analysis. you will obtein more output for each individual.
+RFMIX2 Execution:
 
-The genetic map file must to be contain all chromosomes together. from 1 to 22. the first column is chr, 
-second column is pos and the tirtdh column is cM. is tab delimited 
+We recommend running RFMIX2 for one individual at a time. You can use a loop to include all target individuals in the analysis. This will generate more output files, one for each individual.
+
+The genetic map file should contain all chromosomes together, from 1 to 22. The columns should represent chromosome, position, and cM, tab-delimited.
+
+Example:
 
 chr	pos	cM \
 chr1	55550	0 \
@@ -55,7 +45,7 @@ chr1	629241	1.478214 \
 . \
 chr22	45679	0.086453
 
-summary needed for RFMIX2
+Summary Needed for RFMIX2:
 
 -f target VCF/BCF file\
 -r reference VCF/BCF file\
@@ -65,11 +55,10 @@ summary needed for RFMIX2
 --chromosome=chromosome to analyse
 	
 	
-script for example dataset. is in Example_Dataset folder
+Example Script for Dataset:
 
-make sure you have RFmix2 installed. is crucial to use RFmix version 2 
-( "conda install rfmix" ) or "https://github.com/slowkoni/rfmix" 
-Why RFmix2? compare to Rfmix 1.5.4 Rfmix2 works directly with vcf phased input file and is 20x faster than rfmix1.5.4
+Make sure you have RFmix2 installed. RFmix version 2 directly works with phased VCF input files and is significantly faster than RFmix 1.5.4.
+
 
 for i in {1..22}; \
 do \
@@ -79,49 +68,53 @@ rfmix -e 2 -w 0.5 -f Example_dataset/Target/Mozabite1_ind1_allchr.vcf \
 -o Output/Mozabite1_ind1_chr$i --chromosome=$i; \
 done
 
-based on your dataset takes from 3 to 30 minutes per chromosomes
+Based on your dataset, this process may take from 3 to 30 minutes per chromosome.
 
-4 different output are generated from RFMIX2 for each chromosome. we are looking just on .msv.tsp one.
+Combining Output Files:
 
-condense all the msp.tsv together without the first 2 line for the other files
-e.g: 
+Four different output files are generated from RFMIX2 for each chromosome, but we are interested in the .msv.tsp file. 
+To combine these files for all chromosomes, you can use the following command:
 
 for i in {1..22}; do tail -n +3 "Mozabite1_ind1_chr$i.msp.tsv"; done > Mozabite1_ind1_allchr.msp.tsv
 
 in Mozabite_ind1_chr2.msp.tsv output, you can see, on the top, 
 that each population has a specific number corresponding to ancestry. e.g Africa=0 Europe=1 MiddleEast=2
 
-now run the R script. with 
+Running the R Script:
+
+Now, run the R script using the command:
 
 Rscript rfmix2tobed.R
 
-the script accepts the input file " Mozabite_ind1_allchr.msp.tsv" you can change the input name and path
-you will obetin 2 .bed file. e.g Mozabite1_ind1_hap1.bed Mozabite1_ind1_hap2.bed 
-(where Africa is ANC0 e Europe is ANC1 e MiddleEast is ANC2). you can change 
-this order or ancestry based on your project. the ancestry needs to be in the same order of input msp.tsv
+The script accepts the input file "Mozabite_ind1_allchr.msp.tsv," but you can change the input name and path. It will produce two .bed files (e.g., Mozabite1_ind1_hap1.bed and Mozabite1_ind1_hap2.bed), where Africa is labeled as ANC0, Europe as ANC1, and Middle East as ANC2. You can adjust this order or ancestry labels according to your project's needs. The ancestry labels must match the order in the input msp.tsv file.
 
-now run rfmix2bedtotagore.py with "python rfmix2bedtotagore.py --help". see the istructions
-for all ancestry that you decided in RFMIX you can choose a color with code notation. e.g (#0b1b56)
-e.g
+Using rfmix2bedtotagore.py:
+
+Run the rfmix2bedtotagore.py script with python rfmix2bedtotagore.py --help to see the instructions. You can choose colors, represented in code notation (e.g., #0b1b56), for each ancestry determined in RFMIX.
+
+Example:
 
 python rfmix2bedtotagore.py -1 Output/Mozabite1_ind1_hap1.bed -2 Output/Mozabite1_ind1_hap2.bed \
 --anc0 #80cdc1 --anc1 #dfc27d --anc2 #075716 -o Tagore/Mozabite1/Mozabite1_ind1_tagore.bed
 
-using these color meens that African ancestry is light blue, light brown is Europe and green is Middle_east
+These colors indicate, for example, that African ancestry is represented by light blue, European ancestry by light brown, and Middle Eastern ancestry by green.
 
-Plot with Tagore
-https://github.com/jordanlab/tagore#installation
-now install tagore with : pip3 install tagore
-make sure you have rsvg installed : pip3 install rsvg or brew install rsvg
+Plotting with Tagore:
+
+Install Tagore using pip3 install tagore and ensure you have rsvg installed with pip3 install rsvg or brew install rsvg.
+
+Run tagore --help to see how to plot the results. For instance:
 
 run tagore --help. to see how to plot 
 e.g
 
 tagore -i Tagore/Mozabite1/Mozabite1_ind1_tagore.bed -p Tagore/Mozabite1/Mozabite1_ind1_tagore -b hg38 -ofmt png
-you can choose png or pdf. automaticaly .svg is generated. is editable with Illustrator. 
-Legend is not provided by Tagore
 
-end
+You can choose between PNG or PDF output. An SVG file will also be generated automatically, which can be edited with Illustrator. Note that Tagore does not provide a legend.
+
+End
+
+This pipeline guides you through the process of using RFmix2 to analyze phased VCF files, convert the results to BED format, and visualize the local ancestry using Tagore.
 
 
 
