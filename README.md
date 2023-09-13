@@ -26,15 +26,15 @@ of the vcf file. the second column must contain the ancestry based on your own.
 
 e.g tab delimited
 
-ind1	Africa
-ind2	Africa
-ind3	Africa
-ind4	Europe
-ind5	Europe
-ind6	MiddleEast
-ind7	MiddleEast
-ind8	MiddleEast
-ind9	MiddleEast
+ind1	Africa \
+ind2	Africa \
+ind3	Africa \
+ind4	Europe \ 
+ind5	Europe \
+ind6	MiddleEast \
+ind7	MiddleEast \
+ind8	MiddleEast \
+ind9	MiddleEast \
 
 
 We suggest to run RFMIX2 just on individual at a time. you can use loop to include all individuals
