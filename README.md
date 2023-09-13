@@ -29,8 +29,8 @@ e.g tab delimited
 ind1	Africa \
 ind2	Africa \
 ind3	Africa \
-ind4	Europe \ 
-ind5	Europe \
+ind4	Europe\ 
+ind5	Europe\
 ind6	MiddleEast \
 ind7	MiddleEast \
 ind8	MiddleEast \
