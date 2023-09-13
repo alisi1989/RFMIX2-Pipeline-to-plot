@@ -23,7 +23,9 @@ Prepare the samplefile
 the sample map file in .ref/.txt must contain all the individuals of the dataset used as reference. 
 it must not contain the target individuals. the first column are the individual in the same order 
 of the vcf file. the second column must contain the ancestry based on your own. 
+
 e.g tab delimited
+
 ind1	Africa
 ind2	Africa
 ind3	Africa
@@ -83,12 +85,17 @@ based on your dataset takes from 3 to 30 minutes per chromosomes
 4 different output are generated from RFMIX2 for each chromosome. we are looking just on .msv.tsp one.
 
 condense all the msp.tsv together without the first 2 line for the other files
-e.g: for i in {1..22}; do tail -n +3 "Mozabite1_ind1_chr$i.msp.tsv"; done > Mozabite1_ind1_allchr.msp.tsv
+e.g: 
+
+for i in {1..22}; do tail -n +3 "Mozabite1_ind1_chr$i.msp.tsv"; done > Mozabite1_ind1_allchr.msp.tsv
 
 in Mozabite_ind1_chr2.msp.tsv output, you can see, on the top, 
 that each population has a specific number corresponding to ancestry. e.g Africa=0 Europe=1 MiddleEast=2
 
-now run the R script. with "Rscript rfmix2tobed.R"
+now run the R script. with 
+
+Rscript rfmix2tobed.R
+
 the script accepts the input file " Mozabite_ind1_allchr.msp.tsv" you can change the input name and path
 you will obetin 2 .bed file. e.g Mozabite1_ind1_hap1.bed Mozabite1_ind1_hap2.bed 
 (where Africa is ANC0 e Europe is ANC1 e MiddleEast is ANC2). you can change 
@@ -97,9 +104,11 @@ this order or ancestry based on your project. the ancestry needs to be in the sa
 now run rfmix2bedtotagore.py with "python rfmix2bedtotagore.py --help". see the istructions
 for all ancestry that you decided in RFMIX you can choose a color with code notation. e.g (#0b1b56)
 e.g
+
 python rfmix2bedtotagore.py -1 Output/Mozabite1_ind1_hap1.bed -2 Output/Mozabite1_ind1_hap2.bed \
 --anc0 #80cdc1 --anc1 #dfc27d --anc2 #075716 -o Tagore/Mozabite1/Mozabite1_ind1_tagore.bed
-using these color meens that Africa ancestry is light blue, light brown is Europe and green is Middle_east
+
+using these color meens that African ancestry is light blue, light brown is Europe and green is Middle_east
 
 Plot with Tagore
 https://github.com/jordanlab/tagore#installation
@@ -108,6 +117,7 @@ make sure you have rsvg installed : pip3 install rsvg or brew install rsvg
 
 run tagore --help. to see how to plot 
 e.g
+
 tagore -i Tagore/Mozabite1/Mozabite1_ind1_tagore.bed -p Tagore/Mozabite1/Mozabite1_ind1_tagore -b hg38 -ofmt png
 you can choose png or pdf. automaticaly .svg is generated. is editable with Illustrator. 
 Legend is not provided by Tagore
