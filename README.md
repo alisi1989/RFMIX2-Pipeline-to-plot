@@ -34,7 +34,7 @@ ind5	Europe \
 ind6	MiddleEast \
 ind7	MiddleEast \
 ind8	MiddleEast \
-ind9	MiddleEast \
+ind9	MiddleEast 
 
 
 We suggest to run RFMIX2 just on individual at a time. you can use loop to include all individuals
