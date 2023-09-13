@@ -29,8 +29,8 @@ e.g tab delimited
 ind1	Africa \
 ind2	Africa \
 ind3	Africa \
-ind4	Europe\ 
-ind5	Europe\
+ind4	Europe \
+ind5	Europe \
 ind6	MiddleEast \
 ind7	MiddleEast \
 ind8	MiddleEast \
@@ -43,17 +43,17 @@ of target into the analysis. you will obtein more output for each individual.
 The genetic map file must to be contain all chromosomes together. from 1 to 22. the first column is chr, 
 second column is pos and the tirtdh column is cM. is tab delimited 
 
-chr	pos	cM
-chr1	55550	0
-chr1	82571	0.080572
-chr1	88169	0.092229
-chr1	285245	0.439456
-chr1	629218	1.478148
-chr1	629241	1.478214
-.
-.
-.
-chr22	45679	0.086453
+chr	pos	cM \
+chr1	55550	0 \
+chr1	82571	0.080572 \
+chr1	88169	0.092229 \
+chr1	285245	0.439456 \
+chr1	629218	1.478148 \
+chr1	629241	1.478214 \
+. \
+. \
+. \
+chr22	45679	0.086453 \
 
 summary needed for RFMIX2
 
