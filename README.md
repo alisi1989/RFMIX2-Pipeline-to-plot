@@ -3,16 +3,16 @@ Here we present a method to plot the outputs of RFmix version 2
 
 starts from Pipeline.txt and follow up
 
-Author "Alessandro Lisi, Michael Campbell"
-"Campbell Computational Genomics LAB @USC")
+###Author "Alessandro Lisi, Michael Campbell"\
+"Campbell Computational Genomics LAB @USC")###
 
-#Pipeline for RFmix 2 and plot with Tagore all thr chrs
+Pipeline for RFmix 2 and plot with Tagore all thr chrs
 
-#Prepare input dataset
+Prepare input dataset:
 
-#The target file must to be in vcf and phased(not gzip) all chrs together. one individual per vcf
+The target file must to be in vcf and phased(not gzip) all chrs together. one individual per vcf
 
-#The reference file must to be in vcf and phased (not gzip) split in chrs 1 to 22. 
+The reference file must to be in vcf and phased (not gzip) split in chrs 1 to 22. 
 
 In this script Mozabite is used as Target. 
 African, Europe and MiddleEast is used as Reference. 
