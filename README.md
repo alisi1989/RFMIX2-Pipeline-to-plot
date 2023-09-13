@@ -1,9 +1,10 @@
-In this guide, we present a method for plotting the outputs of RFmix version 2. The process begins with a Pipeline.txt file and follows these steps:
+
 
 Author: Alessandro Lisi, Michael Campbell
 (Campbell Computational Genomics LAB @ USC)
 
-Pipeline for RFmix 2 and Plotting with Tagore for All Chromosomes
+In this guide, we present a method for plotting the outputs of RFmix version 2. The process begins with a Pipeline.txt file and follows these steps:\
+
 Prepare Input Dataset:
 
 The target file must be in VCF format and phased (not gzipped) and should contain all chromosomes together, with one individual per VCF.
