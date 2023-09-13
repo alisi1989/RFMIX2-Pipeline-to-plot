@@ -53,16 +53,16 @@ chr1	629241	1.478214 \
 . \
 . \
 . \
-chr22	45679	0.086453 \
+chr22	45679	0.086453
 
 summary needed for RFMIX2
 
 
--f <target VCF/BCF file>
-	-r <reference VCF/BCF file>
-	-m <target map file>
-	-g <genetic map file> 
-	-o <output basename>
+-f <target VCF/BCF file> \
+	-r <reference VCF/BCF file> \
+	-m <target map file> \
+	-g <genetic map file> \
+	-o <output basename> \
 	--chromosome=<chromosome to analyze>
 	
 	
