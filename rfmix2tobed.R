@@ -1,5 +1,5 @@
 # Read the file
-msp <- read.table("/Users/alessandrolisi/Desktop/MyData2/RFMIX2_pipeline_master/Output/Mozabite1_ind1_allchr.msp.tsv", header = FALSE, sep = "\t")
+msp <- read.table("~/RFMIX2_pipeline_master/Output/Mozabite1_ind1_allchr.msp.tsv", header = FALSE, sep = "\t")
 
 # Select only the first 8 columns
 msp2 <- msp[, 1:8]
@@ -31,5 +31,5 @@ ch2$ind1 <- ifelse(ch2$ind1 == 0, "ANC0",
                    ifelse(ch2$ind1 == 4, "ANC4", ch2$ind1)))))
 
 # Save the two files for each individual
-write.table(ch2, "/Users/alessandrolisi/Desktop/MyData2/RFMIX2_pipeline_master/Output/Mozabite1_ind1_hap2.bed", quote = FALSE, col.names = FALSE, row.names = FALSE, sep = "\t")
-write.table(ch1, "/Users/alessandrolisi/Desktop/MyData2/RFMIX2_pipeline_master/Output/Mozabite1_ind1_hap1.bed", quote = FALSE, col.names = FALSE, row.names = FALSE, sep = "\t")
+write.table(ch2, "~RFMIX2_pipeline_master/Output/Mozabite1_ind1_hap2.bed", quote = FALSE, col.names = FALSE, row.names = FALSE, sep = "\t")
+write.table(ch1, "~/RFMIX2_pipeline_master/Output/Mozabite1_ind1_hap1.bed", quote = FALSE, col.names = FALSE, row.names = FALSE, sep = "\t")
