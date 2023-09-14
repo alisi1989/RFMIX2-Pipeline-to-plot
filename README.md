@@ -45,6 +45,7 @@ chr1   629218 1.478148
 chr1   629241 1.478214
 </pre>
 
+
 To run RFMix2, you will need the following files:
 
 -f target VCF/BCF file\
@@ -73,6 +74,7 @@ done
 </pre>
 
 
+
 Based on your dataset, this process may take from 3 to 30 minutes per chromosome.
 
 
@@ -90,6 +92,7 @@ To combine the *.msp.tsv files for all chromosomes, you can use the following co
 for i in {1..22}; do tail -n +3 "Mozabite1_ind1_chr$i.msp.tsv"; done > Mozabite1_ind1_allchr.msp.tsv
 </code>
 </pre>
+
 
 
 5. Run the R Script
@@ -119,6 +122,7 @@ python rfmix2bedtotagore.py -1 Output/Mozabite1_ind1_hap1.bed -2 Output/Mozabite
 </pre>
 
 
+
 These color codes indicate that African ancestry is represented by light blue, European ancestry by light brown, and Middle Eastern ancestry by green.
 
 The output file generated is "Tagore/Mozabite1/Mozabite1_ind1_tagore.bed"
@@ -135,6 +139,8 @@ Run the command "tagore --help" to see how to plot the results. For instance, yo
 tagore -i Tagore/Mozabite1/Mozabite1_ind1_tagore.bed -p Tagore/Mozabite1/Mozabite1_ind1_tagore -b hg38 -ofmt png
 </code>
 </pre>
+
+
 
 Here, "Tagore/Mozabite1/Mozabite1_ind1_tagore.bed" is the file generated in Step 6 above; -p is the prefix of the output file; -b is the genome reference build; -ofmt is the output format
 
