@@ -16,15 +16,19 @@ Furthermore, the reference file also should be in VCF and phased (not gzipped). 
 
 Create a sample map file in *.ref or *.txt tab-delimited format. The map file should include all individuals from the reference dataset (and none of the target individuals). The first column should list the individuals in the same order as in the VCF file. The second column should specify the ancestry based on your own classification. Please see an example of a sample map file in tab-delimited format below:
 
-ind1	Africa \
-ind2	Africa \
-ind3	Africa \
-ind4	Europe \
-ind5	Europe \
-ind6	MiddleEast \
-ind7	MiddleEast \
-ind8	MiddleEast \
+<pre>
+<code style="white-space: pre;">
+ind1	Africa 
+ind2	Africa 
+ind3	Africa 
+ind4	Europe 
+ind5	Europe 
+ind6	MiddleEast 
+ind7	MiddleEast 
+ind8	MiddleEast 
 ind9	MiddleEast 
+</code>
+</pre>
 
 
 3. Execute RFMix2
