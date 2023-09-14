@@ -5,13 +5,12 @@ Author: Alessandro Lisi and Michael C. Campbell
 
 In this README file, we present a method for plotting the output of RFMix version 2 (RFMix2). This pipeline will guide you through the process of using RFMix2 to analyze phased VCF files, convert the results to BED format, and visualize the local ancestry using Tagore.
 
-Question Alessandro about this: The process begins with a Pipeline.txt file and follows the steps below.
-
 1. Prepare Input Dataset
 
 The target file must be in VCF with one individual per VCF. This VCF should contain all chromosomes together and then phased (not gzipped). 
 
 Furthermore, the reference file also should be in VCF and phased (not gzipped). However, in this case, the reference file should be split into individual chromosomes (e.g., 1 through 22 if you are interested in autosomal DNA).
+
 
 2. Create a Sample Map File
 
@@ -30,7 +29,7 @@ ind9	MiddleEast
 
 3. Execute RFMix2
 
-Ask Alessandro: First, we recommend running RFMix2 on one individual at a time. You can use a for loop that includes all target individuals in the analysis, which will generate multiple output files for each individual.
+First, we recommend running RFMix2 on one individual at a time (RFmix2 works on one individual at a time). You can use a for loop that includes all target individuals in the analysis, which will generate multiple output files for each individual.
 
 Secondly, the genetic map file should contain all chromosomes together (e.g., 1 through 22 for autosomal DNA). In this file, the columns should be chromosome, position, and cM, respectively, in tab-delimited format. Please see an example of the genetic map file below:
 
@@ -53,7 +52,7 @@ To run RFMix2, you will need the following files:
 -m target map file\
 -g genetic map file\
 -o output basename\
---chromosome=chromosome to analyse
+--chromosome=chromosome to analyze
 	
 Example Script for Dataset:
 
@@ -71,15 +70,17 @@ done
 
 Based on your dataset, this process may take from 3 to 30 minutes per chromosome.
 
+
 4. Combine Output Files
 
-Ask Alessandro: After running RFMix2, four different types of output file are generated for each chromosome. Of these different outputs, we are interested in the *.msv.tsp files. 
+After running RFMix2, four different types of output file are generated for each chromosome; 1) *.Q (global ancestry); 2) *.tsv (marginal probability); 3) *.sis.tsv (condensed information from *.msp.tsv); and 4) *.msp.tsv (crf point). Of these different outputs, we are interested in the *.msp.tsv files. 
 
-To combine the *.msv.tsp files for all chromosomes, you can use the following command:
+If you look at our example output file, Mozabite1_ind1_chr2.msp.tsv, you can see at the top that donor populations have a specific number that corresponds to ancestry (e.g., Africa=0, Europe=1, MiddleEast=2).
 
-Ask Alessandro (Mozabite1_ind1_chr"$i".msp.tsv): for i in {1..22}; do tail -n +3 "Mozabite1_ind1_chr$i.msp.tsv"; done > Mozabite1_ind1_allchr.msp.tsv
+To combine the *.msp.tsv files for all chromosomes, you can use the following command:
 
-Ask Alessandro: In Mozabite_ind1_chr2.msp.tsv output, you can see at the top that donor populations have a specific number that corresponds to ancestry (e.g., Africa=0, Europe=1, MiddleEast=2).
+for i in {1..22}; do tail -n +3 "Mozabite1_ind1_chr$i.msp.tsv"; done > Mozabite1_ind1_allchr.msp.tsv
+
 
 5. Run the R Script
 
@@ -88,6 +89,7 @@ Next, run the R script using the following command:
 Rscript rfmix2tobed.R
 
 This R script accepts the "Mozabite_ind1_allchr.msp.tsv" file as input (please note that you can change the input name and path). This script will generate two *.bed files (in this case, Mozabite1_ind1_hap1.bed and Mozabite1_ind1_hap2.bed) in which Africa is labeled as ANC0, Europe as ANC1, and Middle East as ANC2. You can modify this order or the ancestry labels according to your needs. However, the ancestry labels must match the order in the *.msp.tsv input file.
+
 
 6. Apply the rfmix2bedtotagore.py script
 
@@ -99,6 +101,7 @@ python rfmix2bedtotagore.py -1 Output/Mozabite1_ind1_hap1.bed -2 Output/Mozabite
 These color codes indicate that African ancestry is represented by light blue, European ancestry by light brown, and Middle Eastern ancestry by green.
 
 The output file generated is "Tagore/Mozabite1/Mozabite1_ind1_tagore.bed"
+
 
 7. Plot with Tagore
 
