@@ -100,7 +100,12 @@ for i in {1..22}; do tail -n +3 "Mozabite1_ind1_chr$i.msp.tsv"; done > Mozabite1
 
 Next, run the R script using the following command:
 
+<pre>
+<code>
 Rscript rfmix2tobed.R
+</code>
+</pre>
+
 
 This R script accepts the "Mozabite_ind1_allchr.msp.tsv" file as input (please note that you can change the input name and path). This script will generate two *.bed files (in this case, Mozabite1_ind1_hap1.bed and Mozabite1_ind1_hap2.bed) in which Africa is labeled as ANC0, Europe as ANC1, and Middle East as ANC2. You can modify this order or the ancestry labels according to your needs. However, the ancestry labels must match the order in the *.msp.tsv input file.
 
@@ -109,8 +114,14 @@ This R script accepts the "Mozabite_ind1_allchr.msp.tsv" file as input (please n
 
 Prior to running the rfmix2bedtotagore.py script, type "python rfmix2bedtotagore.py --help" to see the instructions. You can choose your colors, represented by code notation (e.g., #0b1b56), for each ancestry determined by RFMix2. For example,
 
+
+<pre>
+<code>
 python rfmix2bedtotagore.py -1 Output/Mozabite1_ind1_hap1.bed -2 Output/Mozabite1_ind1_hap2.bed \
 --anc0 #80cdc1 --anc1 #dfc27d --anc2 #075716 -o Tagore/Mozabite1/Mozabite1_ind1_tagore.bed
+</code>
+</pre>
+
 
 These color codes indicate that African ancestry is represented by light blue, European ancestry by light brown, and Middle Eastern ancestry by green.
 
@@ -123,7 +134,11 @@ Install Tagore using "pip3 install tagore" and also ensure that you have rsvg in
 
 Run the command "tagore --help" to see how to plot the results. For instance, you can run the following command to generate a plot in png format:
 
+<pre>
+<code>
 tagore -i Tagore/Mozabite1/Mozabite1_ind1_tagore.bed -p Tagore/Mozabite1/Mozabite1_ind1_tagore -b hg38 -ofmt png
+</code>
+</pre>
 
 Here, "Tagore/Mozabite1/Mozabite1_ind1_tagore.bed" is the file generated in Step 6 above; -p is the prefix of the output file; -b is the genome reference build; -ofmt is the output format
 
