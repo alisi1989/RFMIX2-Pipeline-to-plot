@@ -60,6 +60,8 @@ Make sure you have the RFmix2 software installed. RFMix2 directly works with pha
 
 To run the RFMix2 software, you can use the command below. If you would like to change the window-size of local ancestry, please refer to the RFMix2 manual.
 
+<pre>
+
 for i in {1..22}; \
 do \
 rfmix -e 2 -w 0.5 -f Example_dataset/Target/Mozabite1_ind1_allchr.vcf \
@@ -67,6 +69,9 @@ rfmix -e 2 -w 0.5 -f Example_dataset/Target/Mozabite1_ind1_allchr.vcf \
 -m Sample_map_File/sample_file.txt -g map/all_chr.txt\
 -o Output/Mozabite1_ind1_chr$i --chromosome=$i; \
 done
+
+
+</pre>
 
 Based on your dataset, this process may take from 3 to 30 minutes per chromosome.
 
