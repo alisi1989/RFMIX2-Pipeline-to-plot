@@ -34,16 +34,16 @@ First, we recommend running RFMix2 on one individual at a time (RFmix2 works on 
 Secondly, the genetic map file should contain all chromosomes together (e.g., 1 through 22 for autosomal DNA). In this file, the columns should be chromosome, position, and cM, respectively, in tab-delimited format. Please see an example of the genetic map file below:
 
 chr	pos	cM 
-chr1	55550	0 
-chr1	82571	0.080572 
-chr1	88169	0.092229 
-chr1	285245	0.439456 
-chr1	629218	1.478148
-chr1	629241	1.478214
-. 
-. 
-. 
-chr22	45679	0.086453
+chr1	55550	0 \
+chr1	82571	0.080572 \
+chr1	88169	0.092229 \
+chr1	285245	0.439456 \
+chr1	629218	1.478148 \
+chr1	629241	1.478214 \
+. \
+. \
+. \
+chr22	45679	0.086453 
 
 To run RFMix2, you will need the following files:
 
