@@ -88,7 +88,12 @@ If you look at our example output file, Mozabite1_ind1_chr2.msp.tsv, you can see
 
 To combine the *.msp.tsv files for all chromosomes, you can use the following command:
 
+
+<pre>
+<code>
 for i in {1..22}; do tail -n +3 "Mozabite1_ind1_chr$i.msp.tsv"; done > Mozabite1_ind1_allchr.msp.tsv
+</code>
+</pre>
 
 
 5. Run the R Script
