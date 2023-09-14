@@ -1,6 +1,6 @@
 
 
-Author: Alessandro Lisi, Michael C. Campbell
+Author: Alessandro Lisi and Michael C. Campbell
 (Computational Genomics Lab @ USC, Department of Biological Sciences, Human and Evolutionary Biology section)
 
 In this README file, we present a method for plotting the output of RFMix version 2 (RFMix2). This pipeline will guide you through the process of using RFMix2 to analyze phased VCF files, convert the results to BED format, and visualize the local ancestry using Tagore.
