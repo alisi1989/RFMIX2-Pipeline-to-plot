@@ -101,7 +101,7 @@ Next, run the script using the following command:
 
 <pre>
 <code>
-python RFMix2ToBed.py --input Mozabite1_ind1_allchr.msp.tsv --output Mozabite1_ind1.bed
+python RFMix2ToBed.py --input Output/Mozabite1_ind1_allchr.msp.tsv --output Output/Mozabite1_ind1.bed
 </code>
 </pre>
 
@@ -117,7 +117,7 @@ Prior to running the BedToLap.py.py script, type "python BedToLap.py --help" to 
 <pre>
 <code>
 python BedToLap.py -bed1 Output/Mozabite1_ind1_hap1.bed -bed2 Output/Mozabite1_ind1_hap2.bed \
---ancestry0 #80cdc1 --ancestry1 #dfc27d --ancestry2 #075716 -o Mozabite1/Mozabite1_ind1_LAP.bed
+--ancestry0 #80cdc1 --ancestry1 #dfc27d --ancestry2 #075716 -o Output/Mozabite1_ind1_LAP.bed
 </code>
 </pre>
 
@@ -125,7 +125,7 @@ python BedToLap.py -bed1 Output/Mozabite1_ind1_hap1.bed -bed2 Output/Mozabite1_i
 
 These color codes indicate that African ancestry is represented by light blue, European ancestry by light brown, and Middle Eastern ancestry by green.
 
-The output file generated is "Tagore/Mozabite1/Mozabite1_ind1_tagore.bed"
+The output file generated is "Output/Mozabite1_ind1_LAP.bed"
 
 
 7. Plot with LAP
@@ -135,13 +135,13 @@ Run the command "python LAP.py --help" to see how to plot the results. For insta
 
 <pre>
 <code>
-python LAP.py -I Mozabite1/Mozabite1_ind1_tagore.bed -O Tagore/Mozabite1/Mozabite1_ind1_tagore -B hg38 
+python LAP.py -I Output/Mozabite1_ind1_LAP.bed -O plot/Mozabite1_ind1_tagore -B hg38 
 </code>
 </pre>
 
 
 
-Here, "Mozabite1/Mozabite1_ind1_tagore.bed" is the file generated in Step 6 above; -O is the prefix of the output file; -B is the genome reference build
+Here, "plot/Mozabite1_ind1_LAP.bed" is the file generated in Step 6 above; -O is the prefix of the output file; -B is the genome reference build
 
 An SVG file will be generated automatically, which can be edited with the Illustrator software. Please note that LAP.py does not provide a legend for plots. Use LAP_legend.py instead.
 
