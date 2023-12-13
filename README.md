@@ -117,7 +117,7 @@ Prior to running the BedToLap.py.py script, type "python BedToLap.py --help" to 
 <pre>
 <code>
 python scripts/BedToLap.py -bed1 Output/Mozabite1_ind1_hap1.bed -bed2 Output/Mozabite1_ind1_hap2.bed \
---ancestry0 #80cdc1 --ancestry1 #dfc27d --ancestry2 #075716 -out Output/Mozabite1_ind1_LAP.bed
+--ancestry0 "#80cdc1" --ancestry1 "#dfc27d" --ancestry2 "#075716" -out Output/Mozabite1_ind1_LAP.bed
 </code>
 </pre>
 
