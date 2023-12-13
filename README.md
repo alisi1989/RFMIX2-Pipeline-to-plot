@@ -22,7 +22,7 @@ ind2	Africa
 ind3	Africa 
 ind4	Europe 
 ind5	Europe 
-ind6	MiddleEast 
+ind6	MiddleEast
 ind7	MiddleEast 
 ind8	MiddleEast 
 ind9	MiddleEast 
@@ -95,29 +95,29 @@ for i in {1..22}; do tail -n +3 "Mozabite1_ind1_chr$i.msp.tsv"; done > Mozabite1
 
 
 
-5. Run the R Script
+5. Run the python script "RFMix2ToBed.py --help". type "python RFMix2ToBed.py --help to see the opstions".
 
-Next, run the R script using the following command:
+Next, run the script using the following command:
 
 <pre>
 <code>
-Rscript rfmix2tobed.R
+python RFMix2ToBed.py --input Mozabite1_ind1_allchr.msp.tsv --output Mozabite1_ind1.bed
 </code>
 </pre>
 
 
-This R script accepts the "Mozabite_ind1_allchr.msp.tsv" file as input (please note that you can change the input name and path). This script will generate two *.bed files (in this case, Mozabite1_ind1_hap1.bed and Mozabite1_ind1_hap2.bed) in which Africa is labeled as ANC0, Europe as ANC1, and Middle East as ANC2. You can modify this order or the ancestry labels according to your needs. However, the ancestry labels must match the order in the *.msp.tsv input file.
+This python script accepts the "Mozabite_ind1_allchr.msp.tsv" file as input (please note that you can change the input name and path). This script will generate two *.bed files (in this case, Mozabite1_ind1_hap1.bed and Mozabite1_ind1_hap2.bed) in which Africa is labeled as ancestry0, Europe as ancestry1, and Middle East as ancestry2. You can modify this order or the ancestry labels according to your needs. However, the ancestry labels must match the order in the *.msp.tsv input file.
 
 
-6. Apply the rfmix2bedtotagore.py script
+6. Apply the BedToLap.py script
 
-Prior to running the rfmix2bedtotagore.py script, type "python rfmix2bedtotagore.py --help" to see the instructions. You can choose your colors, represented by code notation (e.g., #0b1b56), for each ancestry determined by RFMix2. For example,
+Prior to running the BedToLap.py.py script, type "python BedToLap.py --help" to see the instructions. You can choose your colors, represented by code notation (e.g., "#0b1b56"), for each ancestry determined by RFMix2. For example,
 
 
 <pre>
 <code>
-python rfmix2bedtotagore.py -1 Output/Mozabite1_ind1_hap1.bed -2 Output/Mozabite1_ind1_hap2.bed \
---anc0 #80cdc1 --anc1 #dfc27d --anc2 #075716 -o Tagore/Mozabite1/Mozabite1_ind1_tagore.bed
+python BedToLap.py -bed1 Output/Mozabite1_ind1_hap1.bed -bed2 Output/Mozabite1_ind1_hap2.bed \
+--ancestry0 #80cdc1 --ancestry1 #dfc27d --ancestry2 #075716 -o Mozabite1/Mozabite1_ind1_LAP.bed
 </code>
 </pre>
 
@@ -128,23 +128,22 @@ These color codes indicate that African ancestry is represented by light blue, E
 The output file generated is "Tagore/Mozabite1/Mozabite1_ind1_tagore.bed"
 
 
-7. Plot with Tagore
+7. Plot with LAP
 
-Install Tagore using "pip3 install tagore" and also ensure that you have rsvg installed ("pip3 install rsvg" or "brew install rsvg").
 
-Run the command "tagore --help" to see how to plot the results. For instance, you can run the following command to generate a plot in png format:
+Run the command "python LAP.py --help" to see how to plot the results. For instance, you can run the following command to generate a plot in png format:
 
 <pre>
 <code>
-tagore -i Tagore/Mozabite1/Mozabite1_ind1_tagore.bed -p Tagore/Mozabite1/Mozabite1_ind1_tagore -b hg38 -ofmt png
+python LAP.py -I Mozabite1/Mozabite1_ind1_tagore.bed -O Tagore/Mozabite1/Mozabite1_ind1_tagore -B hg38 
 </code>
 </pre>
 
 
 
-Here, "Tagore/Mozabite1/Mozabite1_ind1_tagore.bed" is the file generated in Step 6 above; -p is the prefix of the output file; -b is the genome reference build; -ofmt is the output format
+Here, "Mozabite1/Mozabite1_ind1_tagore.bed" is the file generated in Step 6 above; -O is the prefix of the output file; -B is the genome reference build
 
-You can choose between PNG or PDF output format. In addition, an SVG file will be generated automatically, which can be edited with the Illustrator software. Please note that Tagore does not provide a legend for plots.
+An SVG file will be generated automatically, which can be edited with the Illustrator software. Please note that LAP.py does not provide a legend for plots. Use LAP_legend.py instead.
 
 For any questions about this pipeline, please contact Alessandro Lisi by email, alisi@usc.edu
 
