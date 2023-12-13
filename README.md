@@ -95,13 +95,13 @@ for i in {1..22}; do tail -n +3 "Mozabite1_ind1_chr$i.msp.tsv"; done > Mozabite1
 
 
 
-5. Run the python script "RFMix2ToBed.py --help". type "python RFMix2ToBed.py --help to see the opstions".
+5. type "python RFMix2ToBed.py --help to see the opstions".
 
 Next, run the script using the following command:
 
 <pre>
 <code>
-python RFMix2ToBed.py --input Output/Mozabite1_ind1_allchr.msp.tsv --output Output/Mozabite1_ind1.bed
+python scripts/RFMix2ToBed.py --input Output/Mozabite1_ind1_allchr.msp.tsv --output Output/Mozabite1_ind1.bed
 </code>
 </pre>
 
@@ -116,7 +116,7 @@ Prior to running the BedToLap.py.py script, type "python BedToLap.py --help" to 
 
 <pre>
 <code>
-python BedToLap.py -bed1 Output/Mozabite1_ind1_hap1.bed -bed2 Output/Mozabite1_ind1_hap2.bed \
+python scripts/BedToLap.py -bed1 Output/Mozabite1_ind1_hap1.bed -bed2 Output/Mozabite1_ind1_hap2.bed \
 --ancestry0 #80cdc1 --ancestry1 #dfc27d --ancestry2 #075716 -o Output/Mozabite1_ind1_LAP.bed
 </code>
 </pre>
@@ -135,7 +135,7 @@ Run the command "python LAP.py --help" to see how to plot the results. For insta
 
 <pre>
 <code>
-python LAP.py -I Output/Mozabite1_ind1_LAP.bed -O plot/Mozabite1_ind1_tagore -B hg38 
+python scripts/LAP.py -I Output/Mozabite1_ind1_LAP.bed -O plot/Mozabite1_ind1_tagore -B hg38 
 </code>
 </pre>
 
