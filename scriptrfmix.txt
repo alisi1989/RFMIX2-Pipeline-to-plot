@@ -1,0 +1,6 @@
+Below is an example script for running RFMix2 on chromosomes 7 and 12 in the Anaconda environment:
+
+for i in 7 12             
+do
+rfmix -e 2 -w 0.2 -f Dataset/Target/Target_${j}_chr5712.vcf -r Dataset/Ref/Reference_ALLvs${j}_chr$i.vcf -m SampleFile/ALLvs${j}.txt -g map/all_chr.txt -o ALLvs${j}_chr$i --chromosome=$i
+done
