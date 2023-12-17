@@ -65,10 +65,10 @@ To run the RFMix2 software, you can use the command below. If you would like to 
 <code>
 for i in {1..22}; \
 do \
-rfmix -e 2 -w 0.5 -f Example_dataset/Target/Mozabite1_ind1_allchr.vcf \
+rfmix -e 2 -w 0.5 -f Example_dataset/Target/Mozabite1_allchr.vcf \
 -r Example_dataset/Reference/Reference_chr$i.vcf \
 -m Sample_map_File/sample_file.txt -g map/all_chr.txt\
--o Output/Mozabite1_ind1_chr$i --chromosome=$i; \
+-o Output/Mozabite1_chr$i --chromosome=$i; \
 done
 </code>	
 </pre>
@@ -82,68 +82,88 @@ Based on your dataset, this process may take from 3 to 30 minutes per chromosome
 
 After running RFMix2, four different types of output file are generated for each chromosome; 1) *.Q (global ancestry); 2) *.tsv (marginal probability); 3) *.sis.tsv (condensed information from *.msp.tsv); and 4) *.msp.tsv (crf point). Of these different outputs, we are interested in the *.msp.tsv files. 
 
-If you look at our example output file, Mozabite1_ind1_chr2.msp.tsv, you can see at the top that donor populations have a specific number that corresponds to ancestry (e.g., Africa=0, Europe=1, MiddleEast=2).
+If you look at our example output file, Mozabite1_chr2.msp.tsv, you can see at the top that donor populations have a specific number that corresponds to ancestry (e.g., Africa=0, Europe=1, MiddleEast=2).
 
 To combine the *.msp.tsv files for all chromosomes, you can use the following command:
 
 
 <pre>
 <code>
-for i in {1..22}; do tail -n +3 "Mozabite1_ind1_chr$i.msp.tsv"; done > Mozabite1_ind1_allchr.msp.tsv
+head -n 2 Mozabite1_chr1.msp.tsv > Mozabite1_allchr.msp.tsv 
 </code>
 </pre>
 
-
-
-5. type "python RFMix2ToBed.py --help to see the opstions".
-
-Next, run the script using the following command:
+This above command will preserve the first two rows, which contain header information from the RFMix v.2 output. In addition, the user-specified output filename in the above command must be used in the next command:
 
 <pre>
 <code>
-python scripts/RFMix2ToBed.py --input Output/Mozabite1_ind1_allchr.msp.tsv --output Output/Mozabite1_ind1.bed
+for i in {1..22}; do tail -n +3 "Mozabite1_chr$i.msp.tsv" >> Mozabite1_allchr.msp.tsv;done
 </code>
 </pre>
 
 
-This python script accepts the "Mozabite_ind1_allchr.msp.tsv" file as input (please note that you can change the input name and path). This script will generate two *.bed files (in this case, Mozabite1_ind1_hap1.bed and Mozabite1_ind1_hap2.bed) in which Africa is labeled as ancestry0, Europe as ancestry1, and Middle East as ancestry2. You can modify this order or the ancestry labels according to your needs. However, the ancestry labels must match the order in the *.msp.tsv input file.
+
+5. Convert RFMix v. 2 output files to *.bed files.".
+
+In this step, we recommend users acquaint themselves with the usage of this Python script by typing the following command:
+
+python RFMix2ToBed.py --help
+
+The basic usage of RFMix2ToBed.py is:
+
+python RFMix2ToBed.py --input [input filename] –output [output filename]
+
+Here, the input filename must include the *.msp.tsv extension from Step 1. Furthermore, only a prefix name is required in the output filename (i.e. it is not necessary to add the *.bed extension) as follows:
+
+<pre>
+<code>
+python RFMix2ToBed.py --input Moazbite1_allchr.msp.tsv --output Mozabite1_allchr
+</code>
+</pre>
 
 
-6. Apply the BedToLap.py script
+This python script accepts the "Mozabite1_allchr.msp.tsv" file as input (please note that you can change the input name and path). This script will generate two *.bed files (in this case, Mozabite1_hap1.bed and Mozabite1_hap2.bed) in which Africa is labeled as ancestry0, Europe as ancestry1, and Middle East as ancestry2. The ancestry labels must match the order in the *.msp.tsv input file.
 
+The RFMix2ToBed.py script will generate two output files, namely Mozabite1_hap1.bed and Mozabite1_hap2.bed.
+
+
+6. Create the color scheme for ancestry painting along chromosomes.
+
+The two output files from Step 2 will serve as the input files for Step 3.
 Prior to running the BedToLap.py.py script, type "python BedToLap.py --help" to see the instructions. You can choose your colors, represented by code notation (e.g., "#0b1b56"), for each ancestry determined by RFMix2. For example,
 
 
 <pre>
 <code>
-python scripts/BedToLap.py -bed1 Output/Mozabite1_ind1_hap1.bed -bed2 Output/Mozabite1_ind1_hap2.bed \
---ancestry0 "#80cdc1" --ancestry1 "#dfc27d" --ancestry2 "#075716" -out Output/Mozabite1_ind1_LAP.bed
+python BedToLAP.py --bed1 Mozabite1_allchr_hap1.bed --bed2 Mozabite1_allchr_hap2.bed \
+--ancestry0 "#0000ff" --ancestry1 "#850b39" --ancestry2 "#F4A500" --out Mozabite1.bed
 </code>
 </pre>
 
 
 
-These color codes indicate that African ancestry is represented by light blue, European ancestry by light brown, and Middle Eastern ancestry by green.
+These color codes indicate that African ancestry is represented by Blue, European ancestry by dark red, and Middle Eastern ancestry by gold.
 
-The output file generated is "Output/Mozabite1_ind1_LAP.bed"
-
-
-7. Plot with LAP
+The output file generated is "Output/Mozabite1.bed"
 
 
-Run the command "python LAP.py --help" to see how to plot the results. For instance, you can run the following command to generate a plot in png format:
+7. Generate the ancestry plot for each chromosome.
+
+
+In this step, we suggest users acquaint themselves with the usage of the LAP.py script by typing: python LAP.py --help
+
+
 
 <pre>
 <code>
-python scripts/LAP.py -I Output/Mozabite1_ind1_LAP.bed -O plot/Mozabite1_ind1_tagore -B hg38 
+python LAP.py -I Mozabite1.bed -O Mozabite1_LAP -B hg38 
 </code>
 </pre>
 
 
+where the -O flag specifies the output filename without an extension and -B indicates the genomic build (either “hg37” or “hg38”). The resulting output file (e.g., Mozabite1_LAP.svg and Mozabite1_LAP.pdf) can be edited in Adobe Illustrator or Inkscape. Furthermore, the color quality of the image is 4k resolution (4210 x 1663). 
 
-Here, "plot/Mozabite1_ind1_LAP.bed" is the file generated in Step 6 above; -O is the prefix of the output file; -B is the genome reference build
-
-An SVG file will be generated automatically, which can be edited with the Illustrator software. Please note that LAP.py does not provide a legend for plots. Use LAP_legend.py instead.
+An SVG file will be generated automatically, which can be edited with the Illustrator software. 
 
 For any questions about this pipeline, please contact Alessandro Lisi by email, alisi@usc.edu
 
