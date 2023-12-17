@@ -117,7 +117,7 @@ Here, the input filename must include the *.msp.tsv extension from Step 1. Furth
 
 <pre>
 <code>
-python RFMix2ToBed.py --input Output_RFMix2/Mozabite1_allchr.msp.tsv --output Output_LAP/Mozabite1_allchr
+python Scripts/RFMix2ToBed.py --input Output_RFMix2/Mozabite1_allchr.msp.tsv --output Output_LAP/Mozabite1_allchr
 </code>
 </pre>
 
@@ -135,7 +135,7 @@ Prior to running the BedToLap.py.py script, type "python BedToLap.py --help" to 
 
 <pre>
 <code>
-python BedToLAP.py --bed1 Output_LAP/Mozabite1_allchr_hap1.bed --bed2 Output_LAP/Mozabite1_allchr_hap2.bed \
+python Scripts/BedToLAP.py --bed1 Output_LAP/Mozabite1_allchr_hap1.bed --bed2 Output_LAP/Mozabite1_allchr_hap2.bed \
 --ancestry0 "#0000ff" --ancestry1 "#850b39" --ancestry2 "#F4A500" --out Output_LAP/Mozabite1.bed
 </code>
 </pre>
@@ -156,7 +156,7 @@ In this step, we suggest users acquaint themselves with the usage of the LAP.py 
 
 <pre>
 <code>
-python LAP.py -I Output_LAP/Mozabite1.bed -O Plot/Mozabite1_LAP -B hg38 
+python Scripts/LAP.py -I Output_LAP/Mozabite1.bed -O Plot/Mozabite1_LAP -B hg38 
 </code>
 </pre>
 
