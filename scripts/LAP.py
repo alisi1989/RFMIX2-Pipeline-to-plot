@@ -1,253 +1,175 @@
 #!/usr/bin/env python3
 #Autors Alessandro Lisi & Michael C. Campbell
-#be sure to priorly install pickle (pip install pickle)
+#be sure to priorly install librsvg (brew install rsvg) or for Linux machine "https://manpages.ubuntu.com/manpages/trusty/man1/rsvg-convert.1.html"
 
 #use python LAP.py --help to see the option
 
-
+import argparse
+import xml.etree.ElementTree as ET
 import os
-import pickle
-import sys
-import re
-from argparse import ArgumentParser, HelpFormatter
+import subprocess
 
-VERSION = "1.0"
+def insert_colored_regions(svg_file, bed_file, output_file, individual_name, ancestries):
+    # Definisci manualmente le coordinate dei cromosomi
+    chromosome_coordinates = {
+        'chromosome1_hap1': {'x': 225.000, 'y': 103.20, 'width': 20.5, 'height': 666.300},
+        'chromosome1_hap2': {'x': 246.100, 'y': 103.20, 'width': 20, 'height': 666.300},
+        'chromosome2_hap1': {'x': 288.300, 'y': 121.300, 'width': 20, 'height': 648.200},
+        'chromosome2_hap2': {'x': 309.200, 'y': 121.300, 'width': 20, 'height': 648.200},
+        'chromosome3_hap1': {'x': 351.000, 'y': 238.600, 'width': 20, 'height': 530.900},
+        'chromosome3_hap2': {'x': 372.000, 'y': 238.600, 'width': 20, 'height': 530.900},
+        'chromosome4_hap1': {'x': 413.800, 'y': 260.200, 'width': 20, 'height': 509.300},
+        'chromosome4_hap2': {'x': 434.600, 'y': 260.200, 'width': 20, 'height': 509.300},
+        'chromosome5_hap1': {'x': 476.600, 'y': 283.300, 'width': 20, 'height': 486.200},
+        'chromosome5_hap2': {'x': 497.500, 'y': 283.300, 'width': 20, 'height': 486.200},
+        'chromosome6_hap1': {'x': 539.400, 'y': 312.000, 'width': 20, 'height': 457.500},
+        'chromosome6_hap2': {'x': 560.300, 'y': 312.000, 'width': 20, 'height': 457.500},
+        'chromosome7_hap1': {'x': 602.200, 'y': 342.600, 'width': 20, 'height': 426.900},
+        'chromosome7_hap2': {'x': 623.100, 'y': 342.600, 'width': 20, 'height': 426.900},
+        'chromosome8_hap1': {'x': 664.900, 'y': 380.600, 'width': 20, 'height': 388.900},
+        'chromosome8_hap2': {'x': 685.800, 'y': 380.600, 'width': 20, 'height': 388.900},
+        'chromosome9_hap1': {'x': 727.500, 'y': 398.600, 'width': 20, 'height': 370.900},
+        'chromosome9_hap2': {'x': 748.400, 'y': 398.600, 'width': 20, 'height': 370.900},
+        'chromosome10_hap1': {'x': 790.500, 'y': 410.900, 'width': 20, 'height': 358.600},
+        'chromosome10_hap2': {'x': 811.400, 'y': 410.900, 'width': 20, 'height': 358.600},
+        'chromosome11_hap1': {'x': 853.300, 'y': 407.500, 'width': 20, 'height': 362.000},
+        'chromosome11_hap2': {'x': 874.200, 'y': 407.500, 'width': 20, 'height': 362.00},
+        'chromosome12_hap1': {'x': 916.000, 'y': 412.300, 'width': 20, 'height': 357.200},
+        'chromosome12_hap2': {'x': 937.000, 'y': 412.300, 'width': 20, 'height': 357.200},
+        'chromosome13_hap1': {'x': 978.600, 'y': 462.800, 'width': 20, 'height': 306.700},
+        'chromosome13_hap2': {'x': 999.500, 'y': 462.800, 'width': 20, 'height': 306.700},
+        'chromosome14_hap1': {'x': 1041.600, 'y': 482.400, 'width': 20, 'height': 287.100},
+        'chromosome14_hap2': {'x': 1062.500, 'y': 482.400, 'width': 20, 'height': 287.100},
+        'chromosome15_hap1': {'x': 1104.600, 'y': 495.900, 'width': 20, 'height': 273.600},
+        'chromosome15_hap2': {'x': 1125.600, 'y': 495.900, 'width': 20, 'height': 273.600},
+        'chromosome16_hap1': {'x': 1166.600, 'y': 527.100, 'width': 20, 'height': 242.400},
+        'chromosome16_hap2': {'x': 1187.600, 'y': 527.100, 'width': 20, 'height': 242.400},
+        'chromosome17_hap1': {'x': 1229.900, 'y': 546.000, 'width': 20, 'height': 223.500},
+        'chromosome17_hap2': {'x': 1250.800, 'y': 546.000, 'width': 20, 'height': 223.500},
+        'chromosome18_hap1': {'x': 1292.500, 'y': 553.700, 'width': 20, 'height': 215.800},
+        'chromosome18_hap2': {'x': 1313.400, 'y': 553.700, 'width': 20, 'height': 215.800},
+        'chromosome19_hap1': {'x': 1355.400, 'y': 611.800, 'width': 20, 'height': 157.700},
+        'chromosome19_hap2': {'x': 1376.400, 'y': 611.800, 'width': 20, 'height': 157.700},
+        'chromosome20_hap1': {'x': 1418.200, 'y': 596.200, 'width': 20, 'height': 173.300},
+        'chromosome20_hap2': {'x': 1439.200, 'y': 596.200, 'width': 20, 'height': 173.300},
+        'chromosome21_hap1': {'x': 1481.000, 'y': 643.300, 'width': 20, 'height': 125.900},
+        'chromosome21_hap2': {'x': 1501.900, 'y': 643.300, 'width': 20, 'height': 125.900},
+        'chromosome22_hap1': {'x': 1543.800, 'y': 632.700, 'width': 20, 'height': 136.800},
+        'chromosome22_hap2': {'x': 1564.700, 'y': 632.700, 'width': 20, 'height': 136.800},
+        
+    }
 
-Chromosomes = {
-    "1": {"cx": 128.6, "cy": 1.5, "ht": 1654.5, "width": 118.6},
-    "2": {"cx": 301.4, "cy": 43.6, "ht": 1612.4, "width": 118.6},
-    "3": {"cx": 477.6, "cy": 341.4, "ht": 1314.7, "width": 118.6},
-    "4": {"cx": 655.6, "cy": 517.9, "ht": 1138.1, "width": 118.6},
-    "5": {"cx": 835.4, "cy": 461, "ht": 1195.1, "width": 118.6},
-    "6": {"cx": 1012.4, "cy": 524.2, "ht": 1131.8, "width": 118.6},
-    "7": {"cx": 1198.2, "cy": 608.5, "ht": 1047.5, "width": 118.6},
-    "8": {"cx": 1372.9, "cy": 692.8, "ht": 963.2, "width": 118.6},
-    "9": {"cx": 1554.5, "cy": 724.4, "ht": 931.6, "width": 118.6},
-    "10": {"cx": 1733.8, "cy": 766.6, "ht": 889.4, "width": 118.6},
-    "11": {"cx": 1911.5, "cy": 766.6, "ht": 889.4, "width": 118.6},
-    "12": {"cx": 2095.6, "cy": 769.7, "ht": 886.3, "width": 118.6},
-    "13": {"cx": 129.3, "cy": 2068.8, "ht": 766.1, "width": 118.6},
-    "14": {"cx": 301.6, "cy": 2121.5, "ht": 713.4, "width": 118.6},
-    "15": {"cx": 477.5, "cy": 2153.1, "ht": 681.8, "width": 118.6},
-    "16": {"cx": 656.7, "cy": 2232.2, "ht": 602.8, "width": 118.6},
-    "17": {"cx": 841.2, "cy": 2290.7, "ht": 544.3, "width": 118.6},
-    "18": {"cx": 1015.7, "cy": 2313.9, "ht": 521.1, "width": 118.6},
-    "19": {"cx": 1199.5, "cy": 2437.2, "ht": 397.8, "width": 118.6},
-    "20": {"cx": 1374.4, "cy": 2416.1, "ht": 418.9, "width": 118.6},
-    "21": {"cx": 1553, "cy": 2510.9, "ht": 324.1, "width": 118.6},
-    "22": {"cx": 1736.9, "cy": 2489.8, "ht": 345.1, "width": 118.6},
-    "X": {"cx": 1915.7, "cy": 1799.21, "ht": 1035.4, "width": 118.6},
-    "Y": {"cx": 2120.9, "cy": 2451.6, "ht": 382.7, "width": 118.6},
-}
+    # Definisci manualmente le lunghezze dei cromosomi
+    chromosome_lengths = [249250621, 242193529, 198295559, 190214555, 181538259, 170805979, 159345973, 145138636, 138394717, 133797422, 135086622, 133275309, 114364328, 107043718, 101991189, 90338345, 83257441, 80373285, 58617616, 64444167, 46709983, 50818468]
 
-Chromosomes_Lenghts = {
-    "hg37": {
-        "1": 249250621,
-        "2": 243199373,
-        "3": 198022430,
-        "4": 191154276,
-        "5": 180915260,
-        "6": 171115067,
-        "7": 159138663,
-        "8": 146364022,
-        "9": 141213431,
-        "10": 135534747,
-        "11": 135006516,
-        "12": 133851895,
-        "13": 115169878,
-        "14": 107349540,
-        "15": 102531392,
-        "16": 90354753,
-        "17": 81195210,
-        "18": 78077248,
-        "19": 59128983,
-        "20": 63025520,
-        "21": 48129895,
-        "22": 51304566,
-        "X": 155270560,
-        "Y": 59373566,
-    },
-    "hg38": {
-        "1": 248956422,
-        "2": 242193529,
-        "3": 198295559,
-        "4": 190214555,
-        "5": 181538259,
-        "6": 170805979,
-        "7": 159345973,
-        "8": 145138636,
-        "9": 138394717,
-        "10": 133797422,
-        "11": 135086622,
-        "12": 133275309,
-        "13": 114364328,
-        "14": 107043718,
-        "15": 101991189,
-        "16": 90338345,
-        "17": 83257441,
-        "18": 80373285,
-        "19": 58617616,
-        "20": 64444167,
-        "21": 46709983,
-        "22": 50818468,
-        "X": 156040895,
-        "Y": 57227415,
-    },
-}
+    # Parsing del file SVG
+    tree = ET.parse(svg_file)
+    root = tree.getroot()
 
+    # Aggiungi solo il nome dell'individuo come titolo nel file SVG
+    title_element = ET.Element('text', {'x': "800", 'y': "30", 'fill': "black", 'font-size': "32"})
+    title_element.text = individual_name
+    root.insert(0, title_element)  # Inserisci il titolo all'inizio del documento
 
-def printif(statement, condition):
-    """ Print statements if a boolean (e.g. Warnings) is true """
-    if condition:
-        print(statement)
+    # Crea una leggenda se gli ancestries sono specificati
+    if ancestries:
+        y_offset = 40  # Inizia a disegnare la leggenda da questa coordinata y
+        for ancestry, (name, color) in ancestries.items():
+            # Rettangolo colorato
+            rect_element = ET.Element('rect', {'x': "1450", 'y': str(y_offset), 'width': "25", 'height': "15", 'fill': color})
+            root.insert(0, rect_element)
 
-def draw(arguments, svg_header, svg_footer):
-    """ Create the SVG object based on the Draw istruction """
-    polygons = ""
-    try:
-        input_fh = open(arguments.I, "r")
-    except (IOError, EOFError) as input_fh_e:
-        print("Error opening input file!")
-        raise input_fh_e
-    svg_fn = f"{arguments.O}.svg"
-    try:
-        svg_fh = open(svg_fn, "w")
-        svg_fh.write(svg_header)
-    except (IOError, EOFError) as svg_fh_e:
-        print("Error opening output file!")
-        raise svg_fh_e
-    line_num = 1
-    for entry in input_fh:
-        if entry.startswith("#"):
-            continue
-        entry = entry.rstrip().split("\t")
-        if len(entry) != 7:
-            print(f"Line number {line_num} does not have 7 columns")
-            sys.exit()
-        chrm, start, stop, feature, size, col, chrcopy = entry
-        chrm = chrm.replace("chr", "")
-        start = int(start)
-        stop = int(stop)
-        size = float(size)
-        feature = int(feature)
-        chrcopy = int(chrcopy)
-        if 0 > size > 1:
-            print(
-                f"Feature size, {size},on line {line_num} unclear. \
-                Please bound the size between 0 (0%) to 1 (100%). Defaulting to 1."
-            )
-            size = 1
-        if not re.match("^#.{6}", col):
-            print(
-                f"Feature color, {col}, on line {line_num} unclear. \
-                Please define the color in hex starting with #. Defaulting to #000000."
-            )
-            col = "#000000"
-        if chrcopy not in [1, 2]:
-            print(
-                f"Feature chromosome copy, {chrcopy}, on line {line_num}\
-             unclear. Skipping..."
-            )
-            line_num = line_num + 1
-            continue
-        line_num = line_num + 1
-        if feature == 0:  # Rectangles
-            feat_start = (
-                start * Chromosomes[chrm]["ht"] / Chromosomes_Lenghts[arguments.B][chrm]
-            )
-            feat_end = (
-                stop * Chromosomes[chrm]["ht"] / Chromosomes_Lenghts[arguments.B][chrm]
-            )
-            width = Chromosomes[chrm]["width"] * size / 2
-            if chrcopy == 1:
-                x_pos = Chromosomes[chrm]["cx"] - width
-            else:
-                x_pos = Chromosomes[chrm]["cx"]
-            y_pos = Chromosomes[chrm]["cy"] + feat_start
-            height = feat_end - feat_start
-            svg_fh.write(
-                f'<rect x="{x_pos}" y="{y_pos}" fill="{col}" width="{width}"\
-             height="{height}"/>'
-                + "\n"
-            )
-        elif feature == 2:  # Triangles
-            feat_start = (
-                start * Chromosomes[chrm]["ht"] / Chromosomes_Lenghts[arguments.B][chrm]
-            )
-            feat_end = (
-                stop * Chromosomes[chrm]["ht"] / Chromosomes_Lenghts[arguments.B][chrm]
-            )
-            if chrcopy == 1:
-                x_pos = Chromosomes[chrm]["cx"] - Chromosomes[chrm]["width"] / 2
-                sx_pos = 38.2 * size
-            else:
-                x_pos = Chromosomes[chrm]["cx"] + Chromosomes[chrm]["width"] / 2
-                sx_pos = -38.2 * size
-            y_pos = Chromosomes[chrm]["cy"] + (feat_start + feat_end) / 2
-            sy_pos = 5.5 * size
-            polygons += (
-                f'<polygon fill="{col}" points="{x_pos-sx_pos},{y_pos-sy_pos} \
-            {x_pos},{y_pos} {x_pos-sx_pos},{y_pos+sy_pos}"/>'
-                + "\n"
-            )
-        elif feature == 1:  # dashed lines
-            feat_start = (
-                start * Chromosomes[chrm]["ht"] / Chromosomes_Lenghts[arguments.B][chrm]
-            )
-            feat_end = (
-                stop * Chromosomes[chrm]["ht"] / Chromosomes_Lenghts[arguments.B][chrm]
-            )
-            width = Chromosomes[chrm]["width"] * size / 2
-            if chrcopy == 1:
-                x_pos = Chromosomes[chrm]["cx"] - width
-            else:
-                x_pos = Chromosomes[chrm]["cx"]
-            y_pos = Chromosomes[chrm]["cy"] + feat_start
-            height = feat_end - feat_start
-            svg_fh.write(
-                f'<rect x="{x_pos}" y="{y_pos}" stroke="{col}" fill="none" width="{width}"\
-                height="{height}" stroke-dasharray="10 5"/>'
-                + "\n"
-            )
-        else:
-            print(
-                f"Feature type, {feature}, unclear. Please use either 0, 1, 2 or 3. Skipping..."
-            )
-            continue
-    svg_fh.write(svg_footer)
-    svg_fh.write(polygons)
-    svg_fh.write("</svg>")
-    svg_fh.close()
+            # Testo dell'ancestria
+            text_element = ET.Element('text', {'x': "1480", 'y': str(y_offset + 15), 'fill': "black", 'font-size': "22"})
+            text_element.text = name
+            root.insert(0, text_element)
 
+            y_offset += 30  # Aggiorna la coordinata y per la prossima voce della leggenda
 
-def run():
-    parser = ArgumentParser(
-        prog="python LocalAncestryPaint.py",
-        add_help=True,
-        description="LAP: Software for plotting RFMIX2 local ancestry",
-        formatter_class=lambda prog: HelpFormatter(prog, width=120, max_help_position=120),
-    )
-    
-    parser.add_argument("-I", required=True, help="Input BED-like file.", metavar="<input.bed>")
-    parser.add_argument("-O", required=True, help='Output name for the generated files.', metavar="<output file name>")
-    parser.add_argument("-B", required=True, choices=["hg37", "hg38"], help="Human genome build to use. e.g., --B hg38", metavar="<hg38/hg37>")
-    
-    parsed_args = parser.parse_args()
+    # Estrai le regioni dal file BED
+    chromosome_regions = {}
+    with open(bed_file, 'r') as bed:
+        lines = bed.readlines()[2:]
+        for line in lines:
+            parts = line.strip().split('\t')
+            chromosome = int(parts[0])
+            start = int(parts[1])
+            end = int(parts[2])
+            color = parts[5]
+            haplotype = int(parts[6])
 
-    # Carica i dati del file Draw_istructions2.p direttamente dalla directory corrente
-    try:
-        with open("Draw_istructions.p", "rb") as file:
-            svg_header, svg_footer = pickle.load(file)
-    except FileNotFoundError:
-        print("File Draw_istructions.p not found.")
-        sys.exit(1)
-    except Exception as e:
-        print(f"An error occurred while loading Draw_istructions.p: {e}")
-        sys.exit(1)
+            if chromosome not in chromosome_regions:
+                chromosome_regions[chromosome] = []
 
-    print(f"Drawing Local Ancestry on Chromosome/s using {parsed_args.I}")
-    draw(parsed_args, svg_header, svg_footer)
-    print("SVG of Local Ancestry Paint Created")
+            chromosome_regions[chromosome].append((start, end, color, haplotype))
+
+    # Aggiungi le regioni colorate ai cromosomi nel file SVG
+    for chromosome, regions in chromosome_regions.items():
+        chromosome_id_hap1 = f'chromosome{chromosome}_hap1'
+        chromosome_id_hap2 = f'chromosome{chromosome}_hap2'
+
+        # Verifica se il cromosoma è presente nelle coordinate definite manualmente
+        if chromosome_id_hap1 in chromosome_coordinates and chromosome_id_hap2 in chromosome_coordinates:
+            chromosome_data_hap1 = chromosome_coordinates[chromosome_id_hap1]
+            chromosome_data_hap2 = chromosome_coordinates[chromosome_id_hap2]
+            chromosome_length = chromosome_lengths[chromosome - 1]  # Ottieni la lunghezza del cromosoma
+
+            for region in regions:
+                start, end, color, haplotype = region
+
+                if haplotype == 1:
+                    chromosome_data = chromosome_data_hap1
+                elif haplotype == 2:
+                    chromosome_data = chromosome_data_hap2
+
+                # Calcola le coordinate x, y, width e height della regione colorata per l'orientamento verticale
+                x = chromosome_data['x']
+                y = chromosome_data['y'] + (start / chromosome_length) * chromosome_data['height']
+                width = chromosome_data['width']
+                height = (end - start) / chromosome_length * chromosome_data['height']
+
+                # Crea e aggiungi la regione colorata al cromosoma nel file SVG
+                region_color = ET.Element('rect', x=str(x), y=str(y), width=str(width), height=str(height), fill=color)
+                root.insert(0, region_color)  # Inserisci la regione colorata all'inizio del documento
+
+    # Salva il risultato in un nuovo file SVG
+    tree.write(output_file)
+
+    # Chiama rsvg-convert per convertire il file SVG in un formato diverso (PDF)
+    output_format = "pdf"  # Puoi cambiare questo in "pdf" se desideri un PDF
+    input_svg = output_file
+    output_file = os.path.splitext(output_file)[0] + f'.{output_format}'
+    subprocess.run(["rsvg-convert", "-f", output_format, "-o", output_file, input_svg])
+    print(f"File converted to {output_format}: {output_file}")
+
+def parse_svg_filename(filename):
+    if not filename.endswith('.svg'):
+        filename += '.svg'
+    return filename
+
+def main():
+    parser = argparse.ArgumentParser(description='Insert colored regions from a BED file into an SVG file.')
+    parser.add_argument('-B', type=parse_svg_filename, default='hg38', help='Input build38 "hg38" file without extension')
+    parser.add_argument('-I', type=str, required=True, help='Input BED file')
+    parser.add_argument('-O', type=str, required=True, help='Output SVG file')
+    parser.add_argument('--ancestry0', nargs=2, help='Name and color for ancestry0, e.g., --ancestry0 Africa #0000ff')
+    parser.add_argument('--ancestry1', nargs=2, help='Name and color for ancestry1, e.g., --ancestry1 Europe #850b39')
+    parser.add_argument('--ancestry2', nargs=2, help='Name and color for ancestry2, e.g., --ancestry2 Middle_East #F4A500')
+    args = parser.parse_args()
+
+    # Mappa degli ancestries
+    ancestries = {}
+    if args.ancestry0:
+        ancestries['ancestry0'] = (args.ancestry0[0], args.ancestry0[1])
+    if args.ancestry1:
+        ancestries['ancestry1'] = (args.ancestry1[0], args.ancestry1[1])
+    if args.ancestry2:
+        ancestries['ancestry2'] = (args.ancestry2[0], args.ancestry2[1])
+
+    # Estrai il nome dell'individuo dal file BED
+    individual_name = os.path.basename(args.I).split('.')[0]
+
+    insert_colored_regions(args.B, args.I, args.O, individual_name, ancestries)
 
 if __name__ == "__main__":
-    run()
+    main()

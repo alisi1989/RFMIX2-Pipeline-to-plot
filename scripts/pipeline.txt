@@ -1,5 +1,0 @@
-Pipeline steps:
-
-1: RFmix2ToBed.py (this script convert the rfmix.msp.tsv to 2 files in bed format --help to see the options)
-2: BedToLAP.py (this script create the input file for LAP from hap1.bed and hap2.bed use --help to see the options)
-3: LAP.py and LAP_legend.py (use --help to see the options)

@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+#Autors Alessandro Lisi & Michael C. Campbell
+#be sure to priorly install click (pip install click) 
+
+#use python BedToLAP.py --help to see the option
+
 import os
 import click
 
@@ -34,10 +40,18 @@ import click
 def main(bed1, bed2, ancestry0, ancestry1, ancestry2, ancestry3, ancestry4, unknown, start, end, chromosome, feature_type, output):
     colors = {"UNK": unknown, "ancestry0": ancestry0, "ancestry1": ancestry1, "ancestry2": ancestry2, "ancestry3": ancestry3, "ancestry4": ancestry4}
     output_lines = []
+    
+        # Leggi l'intestazione da bed1 e bed2
+    header = bed1.readline().strip()
+    output.write(header + "\n")
+    
 
     # Process bed1 and bed2
     for line in bed1:
+        if line.startswith('#'):  # Salta le righe di intestazione/commento
+            continue
         line = line.strip().split("\t")
+
         if feature_type == 'line':
             bedLine = f"{line[0]}\t{line[1]}\t{line[2]}\t0\t1\t{colors[line[3]]}\t1"
         else:
@@ -45,6 +59,8 @@ def main(bed1, bed2, ancestry0, ancestry1, ancestry2, ancestry3, ancestry4, unkn
         output_lines.append(bedLine)
 
     for line in bed2:
+        if line.startswith('#'):  # Salta le righe di intestazione/commento
+            continue
         line = line.strip().split("\t")
         if feature_type == 'line':
             bedLine = f"{line[0]}\t{line[1]}\t{line[2]}\t0\t1\t{colors[line[3]]}\t2"
@@ -66,10 +82,8 @@ def main(bed1, bed2, ancestry0, ancestry1, ancestry2, ancestry3, ancestry4, unkn
             ]
         output_lines.extend(extra_lines)
 
-    # Sort the output lines based on the last column (chrCopy)
+    # Ordina e scrivi le linee di output
     output_lines.sort(key=lambda x: int(x.split('\t')[-1]))
-
-    # Scrivi le linee nel file di output senza il commento
     output.write("\n".join(output_lines))
 
 if __name__ == "__main__":
