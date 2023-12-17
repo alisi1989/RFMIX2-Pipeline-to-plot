@@ -89,7 +89,7 @@ To combine the *.msp.tsv files for all chromosomes, you can use the following co
 
 <pre>
 <code>
-head -n 2 Mozabite1_chr1.msp.tsv > Mozabite1_allchr.msp.tsv 
+head -n 2 Output_RFMx2/Mozabite1_chr1.msp.tsv > Output_RFMix2/Mozabite1_allchr.msp.tsv 
 </code>
 </pre>
 
@@ -97,7 +97,7 @@ This above command will preserve the first two rows, which contain header inform
 
 <pre>
 <code>
-for i in {1..22}; do tail -n +3 "Mozabite1_chr$i.msp.tsv" >> Mozabite1_allchr.msp.tsv;done
+for i in {1..22}; do tail -n +3 Output_RFMix2/"Mozabite1_chr$i.msp.tsv" >> Output_RFMix2/Mozabite1_allchr.msp.tsv ;done
 </code>
 </pre>
 
@@ -117,7 +117,7 @@ Here, the input filename must include the *.msp.tsv extension from Step 1. Furth
 
 <pre>
 <code>
-python RFMix2ToBed.py --input Moazbite1_allchr.msp.tsv --output Mozabite1_allchr
+python RFMix2ToBed.py --input Output_RFMix2/Mozabite1_allchr.msp.tsv --output Output_LAP/Mozabite1_allchr
 </code>
 </pre>
 
@@ -135,8 +135,8 @@ Prior to running the BedToLap.py.py script, type "python BedToLap.py --help" to 
 
 <pre>
 <code>
-python BedToLAP.py --bed1 Mozabite1_allchr_hap1.bed --bed2 Mozabite1_allchr_hap2.bed \
---ancestry0 "#0000ff" --ancestry1 "#850b39" --ancestry2 "#F4A500" --out Mozabite1.bed
+python BedToLAP.py --bed1 Output_LAP/Mozabite1_allchr_hap1.bed --bed2 Output_LAP/Mozabite1_allchr_hap2.bed \
+--ancestry0 "#0000ff" --ancestry1 "#850b39" --ancestry2 "#F4A500" --out Output_LAP/Mozabite1.bed
 </code>
 </pre>
 
@@ -156,7 +156,7 @@ In this step, we suggest users acquaint themselves with the usage of the LAP.py 
 
 <pre>
 <code>
-python LAP.py -I Mozabite1.bed -O Mozabite1_LAP -B hg38 
+python LAP.py -I Output_LAP/Mozabite1.bed -O Plot/Mozabite1_LAP -B hg38 
 </code>
 </pre>
 
