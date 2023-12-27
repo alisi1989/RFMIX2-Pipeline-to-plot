@@ -85,7 +85,7 @@ The AncestryGrapher toolkit enables users to visualize global and local ancestry
 The AncestryGrapher toolkit can be downloaded to users’ local computers by pressing the “code” button shaded in green on the Github page (https://github.com/alisi1989/RFmix2-Pipeline-to-plot.git). Using the command-line interface in the Terminal window, users will change the current working directory to the directory where the downloaded “RFmix2-Pipeline-to-plot-main.zip” folder is located. To unzip this folder, type “unzip RFmix2-Pipeline-to-plot-main.zip” at the command line prompt (typically indicated by a “$” sign) and the uncompressed “RFmix2-Pipeline-to-plot-main” folder will appear. To demonstrate the utility of our method, we applied the AncestryGrapher toolkit to the output files from an RFMix v.2 analysis of the Mozabite Berber population from North Africa. 
 
 
-Global Ancestry Painting (GAP)
+##################Global Ancestry Painting (GAP)########################
 
 The GAP pipeline consists of four separate Python scripts: 1) individuals_collapse.py; 2) RFMix2ToBed4GAP.py; 3) BedToGAP.py (this script creates the input file for GAP); 4) GAP.py. Users will need to change their working directory to “GlobalAncestryPaint” inside of the “RFmix2-Pipeline-to-plot-main” directory.
 
@@ -146,7 +146,12 @@ python GAP.py --input Mozabite_GAP.bed --output Mozabite_GAP.pdf
 Users also must specify the output filename, adding either a “.pdf” or a “.svg” extension to the end. This script will generate an output file with ancestry proportions for each individual in a bar plot in either “pdf” or “svg” format (Figure 1). 
 
 
-Local Ancestry Painting (LAP)
+
+
+###############Local Ancestry Painting (LAP)######################
+
+
+
 
 The LAP pipeline consists of three separate Python scripts: 1) RFMIX2ToBed.py; 2) BedToLAP.py; 3) LAP.py. 
 
