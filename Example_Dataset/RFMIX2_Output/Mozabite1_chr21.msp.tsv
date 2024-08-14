@@ -1,0 +1,6 @@
+#Subpopulation order/codes: Africa=0	Europe=1	Middle_East=2
+#chm	spos	epos	sgpos	egpos	n snps	Mozabite_1.0	Mozabite_1.1
+21	5125777	30835139	0.23	31.37	822	2	2
+21	30835139	38942772	31.37	45.06	305	1	2
+21	38942772	44553995	45.06	59.25	230	2	2
+21	44553995	46647632	59.25	62.76	86	2	0

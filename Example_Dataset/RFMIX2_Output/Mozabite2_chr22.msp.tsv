@@ -1,0 +1,5 @@
+#Subpopulation order/codes: Africa=0	Europe=1	Middle_East=2
+#chm	spos	epos	sgpos	egpos	n snps	Mozabite_2.0	Mozabite_2.1
+22	11272546	23475571	1.07	20.87	287	2	2
+22	23475571	37299165	20.87	45.96	535	1	2
+22	37299165	50794060	45.96	74.11	572	2	2

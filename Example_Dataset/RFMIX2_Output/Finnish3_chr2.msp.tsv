@@ -1,0 +1,6 @@
+#Subpopulation order/codes: African=0	Americans=1	East_Asia=2	European=3	South_Asian=4	South_Asian =5
+#chm	spos	epos	sgpos	egpos	n snps	FIN_3.0	FIN_3.1
+2	10682	37799824	0.00	63.95	34927	3	3
+2	37799824	42110408	63.95	68.50	4255	3	2
+2	42110408	44887197	68.50	71.21	2555	2	3
+2	44887197	242182973	71.21	268.85	158263	3	3
