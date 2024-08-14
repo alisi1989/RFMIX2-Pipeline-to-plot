@@ -71,7 +71,7 @@ In this README file, we present a method for plotting the output of RFMIX versio
 
    where variable `i` in a for loop refers to chromosome number (in this case, chromosomes 1 through 22); variable `j` in a for loop refers to the individuals in the dataset (in this case, 1 through 27). 
 
-   It is important to note that the output file name (in this case, `Mozabite${j}_chr${i}` ) must contain the individual name (`Mozabite${j}`) followed by “_chr” and then the chromosome number (`_chr${i}`). 
+   It is important to note that the output file name (in this case, `Mozabite${j}_chr${i}`) must contain the individual name (`Mozabite${j}`) followed by “_chr” and then the chromosome number (`${i}`).
 
    After running RFMIX2, four different types of output files are generated for each chromosome: 1) `*.rfmix.Q` (global ancestry); 2) `*.tsv` (marginal probability); 3) `*.sis.tsv` (condensed information from *.msp.tsv); and 4) `*.msp.tsv` (crf point). Of these different output files, the `*.rfmix.Q` and the `*.msp.tsv` will be the input files in the AncestryGrapher toolkit pipelines. 
 
@@ -310,4 +310,4 @@ Regardless, the resulting output file (e.g., Mozabite1_LAP.pdf) will contain anc
 
 ---
 
-For any questions about this pipeline, please contact Alessandro Lisi (alisi@usc.edu) or Michael Campbell (mc44680@usc.edu) by email.
+For any questions about this pipeline, please contact Alessandro Lisi (alisi@usc.edu) or Michael C. Campbell (mc44680@usc.edu)
