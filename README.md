@@ -43,14 +43,14 @@ In this README file, we present a method for plotting the output of RFMIX versio
 
    To run RFMIX2, users will need the following:
 
-   -f target VCF/BCF file \ # vcf/bcf file containing data from the target population(s)  
+   `-f target VCF/BCF file \ # vcf/bcf file containing data from the target population(s)  
    -r reference VCF/BCF file \ # vcf file containing data from the reference population(s)  
    -m target map file \ # file containing genetic map for SNP loci in the target population  
    -g genetic map file \ # file containing genetic map for SNP loci in the reference population  
    -o output basename \ # the prefix of an output file name (without an extension)  
-   --chromosome #chromosome to analyze  
+   --chromosome #chromosome to analyze`
 
-   The genetic map for each chromosome is provided in the “Genetic_Map” folder in the “RFMIX2-Pipeline-to-plot-main” directory.
+   The genetic map for each chromosome is provided in the `“Genetic_Map”` folder in the `“RFMIX2-Pipeline-to-plot-main”` directory.
 
    Example of basic usage:
 
