@@ -105,7 +105,8 @@ pip3 install argparse
 
 The GAP pipeline consists of three separate Python scripts: 1) RFMIX2ToBed4GAP.py; 2) BedToGAP.py (this script creates the input file for GAP); 3) GAP.py. Users will need to change their working directory to “GAP” in the “RFMIX2-Pipeline-to-plot-main” directory (e.g., cd RFMIX2-Pipeline-to-plot-main/GAP/).
 
-Step 1: Combine the RFMIX2 output files for all the chromosomes per individual into a single file and merge all the individuals together.
+**Step 1**
+Combine the RFMIX2 output files for all the chromosomes per individual into a single file and merge all the individuals together.
 The RFMIX2 software generates a *.rfmix.Q (global ancestry information) output file for each chromosome per individual. Users must ensure that the output file names from RFMIX2 include the name of the individual (e.g., Mozabite1) followed by “_chr” and then the chromosome number (e.g., _chr2 for chromosome 2). This entire name or prefix must appear before the *.rfmix.Q extension (e.g., Mozabite1_chr2.rfmix.Q).
 To combine chromosomes per individual into a single file, users will execute the Python script below:
 Basic command line:
@@ -135,7 +136,8 @@ Example of usage with “--sort-ancestry” flag:
 python Scripts/RFMIX2ToBed4GAP.py --prefix ../Example_Dataset/RFMIX2_Output/Mozabite --chr {1..22} --output Output_GAP/ --sort-ancestry Middle_East
 </code></pre>
 
-Step 2: Create the input file for GAP to visualize the global ancestry proportions.
+**Step 2**
+Create the input file for GAP to visualize the global ancestry proportions.
 The output file generated in Step 1 will serve as the input file for Step 2. However, there are additional options that users may wish to consider. These options can be accessed by typing the following command:
 
 python BedToGAP.py --help
@@ -160,7 +162,8 @@ Example of usage with “--ancestry” flag (for user-specified colors):
 python Scripts/BedToGAP.py --input Output_GAP/Mozabite.bed --ancestry0 Africa #a38905 --ancestry1 Europe #a30d05 --ancestry2 Middle_East #0e6b05 --out Output_GAP/Mozabite_GAP.bed
 </code></pre>
 
-Step 3: Generate the plot for global ancestry proportion with GAP.py.
+**Step 3** 
+Generate the plot for global ancestry proportion with GAP.py.
 In this step, GAP.py requires a single input file name and a user-specified output file name as arguments:
 
 python GAP.py --input [argument] --output [argument]
@@ -207,7 +210,8 @@ sudo apt-get install -y librsvg2-dev
 Alternatively, this library can be downloaded manually from https://manpages.ubuntu.com/manpages/trusty/man1/rsvg-convert.1.html
 The LAP pipeline consists of three separate Python scripts: 1) RFMIX2ToBed.py; 2) BedToLAP.py; 3) LAP.py. Users will need to change their working directory to “LAP” in the “RFMIX2-Pipeline-to-plot-main” folder (e.g., cd RFMIX2-Pipeline-to-plot-main/LAP/).
 
-Step 1: Combine the output files from RFMIX2 into a single file and generate *.bed input files with RFMIX2ToBed.py.
+**Step 1**
+Combine the output files from RFMIX2 into a single file and generate *.bed input files with RFMIX2ToBed.py.
 RFMIX2 generates a *.msp.tsv (local ancestry information) output file for each chromosome for a given individual. Users must ensure that the output file names from RFMIX2 include the name of the individual (e.g., Mozabite1) followed by “_chr” and then the chromosome number (e.g., _chr2 for chromosome 2). This entire name or prefix must precede the *. msp.tsv extension (e.g., Mozabite1_chr2.msp.tsv).
 
 In this step, we recommend that users acquaint themselves with the usage of this Python script by typing the following command:
@@ -243,7 +247,8 @@ python Scripts/RFMIX2ToBed.py --prefix ../Example_Dataset/RFMIX2_Output/Mozabite
 In this scenario, specific chromosome numbers, separated by spaces, will appear after the “--chr" flag.
 In either example, the RFMIX2ToBed.py script will generate two output files for each individual, namely Mozabite1_hap1.bed and Mozabite1_hap2.bed.
 
-Step 2: Create the color scheme for ancestry painting along chromosomes with BedToLAP.py.
+**Step 2**
+Create the color scheme for ancestry painting along chromosomes with BedToLAP.py.
 In this step, we recommend that users acquaint themselves with the usage of this Python script by typing the following command in the Terminal window:
 
 <pre><code>
@@ -274,7 +279,8 @@ for i in {1..27}; do python Scripts/BedToLAP.py --bed1 Output_LAP/Mozabite${i}_h
 
 where variable i in a for loop refers to the individuals (1 through 27) in the dataset; “--chr" accepts a chromosome number as an argument; --from-bp and --to-bp flags require the start and end positions of a gene or genomic region of interest in base pairs, respectively; a dashed black line, indicating a gene or genomic region of interest, will be added to the final plot generated in Step 3.
 
-Step 3: Generate the ancestry plot for each chromosome with LAP.py.
+**Step 3**
+Generate the ancestry plot for each chromosome with LAP.py.
 In this step, we suggest that users acquaint themselves with the usage of the LAP.py script by typing:
 
 python LAP.py --help
