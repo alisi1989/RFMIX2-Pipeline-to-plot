@@ -73,7 +73,9 @@ In this README file, we present a method for plotting the output of RFMIX versio
 
    It is important to note that the output file name (in this case, `Mozabite${j}_chr${i}` ) must contain the individual name (`Mozabite${j}`) followed by “_chr” and then the chromosome number (`_chr${i}`). 
 
-   After running RFMIX2, four different types of output files are generated for each chromosome: 1) *.Q (global ancestry); 2) *.tsv (marginal probability); 3) *.sis.tsv (condensed information from *.msp.tsv); and 4) *.msp.tsv (crf point). Of these different output files, the *.rfmix.Q and the *.msp.tsv will be the input files in the AncestryGrapher toolkit pipelines. 
+   After running RFMIX2, four different types of output files are generated for each chromosome: 1) `*.rfmix.Q` (global ancestry); 2) `*.tsv` (marginal probability); 3) `*.sis.tsv` (condensed information from *.msp.tsv); and 4) `*.msp.tsv` (crf point). Of these different output files, the `*.rfmix.Q` and the `*.msp.tsv` will be the input files in the AncestryGrapher toolkit pipelines. 
+
+---
 
 **Overview of the AncestryGrapher toolkit**
 
@@ -81,7 +83,7 @@ Indeed, inferences of genetic ancestry are informative for mapping the populatio
 
 The AncestryGrapher toolkit enables users to visualize global and local ancestry with two distinct pipelines, Global Ancestry Painting (GAP) and Local Ancestry Painting (LAP), that run in a command-line Terminal window on Mac OS X and Linux machines. To execute these pipelines on a Microsoft Windows computer, users will need to install the Anaconda command-line environment on the host machine. 
 
-The AncestryGrapher toolkit can be downloaded to users’ local computers by pressing the “code” button shaded in green on the Github page (https://github.com/alisi1989/RFMIX2-Pipeline-to-plot.git). Using the command-line interface in the Terminal window, users will change the current working directory to the directory where the downloaded “RFMIX2-Pipeline-to-plot-main.zip” folder is located. To unzip this folder, type “unzip RFMIX2-Pipeline-to-plot-main.zip” at the command line prompt (typically indicated by a “$” sign), and the uncompressed “RFMIX2-Pipeline-to-plot-main” folder will appear. To demonstrate the utility of our method, we applied the AncestryGrapher toolkit to the output files from an RFMIX2 analysis of the Finnish (European), Mozabite Berber (North African), and Bedouin (Middle Eastern) populations.  
+The AncestryGrapher toolkit can be downloaded to users’ local computers by pressing the “code” button shaded in green on the Github page `(https://github.com/alisi1989/RFMIX2-Pipeline-to-plot.git)`. Using the command-line interface in the Terminal window, users will change the current working directory to the directory where the downloaded “RFMIX2-Pipeline-to-plot-main.zip” folder is located. To unzip this folder, type `“unzip RFMIX2-Pipeline-to-plot-main.zip”` at the command line prompt (typically indicated by a “$” sign), and the uncompressed `“RFMIX2-Pipeline-to-plot-main”` folder will appear. To demonstrate the utility of our method, we applied the AncestryGrapher toolkit to the output files from an RFMIX2 analysis of the Finnish (European), Mozabite Berber (North African), and Bedouin (Middle Eastern) populations.  
 
 ---
 
@@ -101,13 +103,14 @@ Before proceeding with the pipelines for LAP, users must ensure they have the fo
 These packages can be installed with pip or pip3:
 
 
-pip3 install argparse
+`pip3 install argparse`
 
 The GAP pipeline consists of three separate Python scripts: 1) RFMIX2ToBed4GAP.py; 2) BedToGAP.py (this script creates the input file for GAP); 3) GAP.py. Users will need to change their working directory to “GAP” in the “RFMIX2-Pipeline-to-plot-main” directory (e.g., cd RFMIX2-Pipeline-to-plot-main/GAP/).
 
-**Step 1**
+**Step 1:**
+
 Combine the RFMIX2 output files for all the chromosomes per individual into a single file and merge all the individuals together.
-The RFMIX2 software generates a *.rfmix.Q (global ancestry information) output file for each chromosome per individual. Users must ensure that the output file names from RFMIX2 include the name of the individual (e.g., Mozabite1) followed by “_chr” and then the chromosome number (e.g., _chr2 for chromosome 2). This entire name or prefix must appear before the *.rfmix.Q extension (e.g., Mozabite1_chr2.rfmix.Q).
+The RFMIX2 software generates a `*.rfmix.Q` (global ancestry information) output file for each chromosome per individual. Users must ensure that the output file names from RFMIX2 include the name of the individual (e.g., Mozabite1) followed by `“_chr”` and then the chromosome number (e.g., `_chr2` for chromosome 2). This entire name or prefix must appear before the `*.rfmix.Q` extension `(e.g., Mozabite1_chr2.rfmix.Q)`.
 To combine chromosomes per individual into a single file, users will execute the Python script below:
 Basic command line:
 
@@ -115,8 +118,8 @@ Basic command line:
 python RFMIX2ToBed4GAP.py --prefix [argument] --chr [argument] --output [argument] --sort-ancestry [argument]
 </code></pre>
 
-where users need to enter: 1) the prefix of the RFMIX2 output filename (without the file extension) after the "--prefix" flag; 2) chromosome number placed between curly braces, {}, after the "--chr" flag; and 3) the prefix of an output filename (without a file extension) after the "--output" flag. This script will automatically generate a *.bed file.
-“--sort-ancestry” is an optional flag that can be used to sort by ancestry. Importantly, the population ancestry name provided after the “--sort-ancestry” flag must be identical to the population ancestry name specified in the header of the *.rfmix.Q output file. The script will then sort this ancestry from the largest ancestry proportion to the smallest.
+where users need to enter: 1) the prefix of the RFMIX2 output filename (without the file extension) after the `"--prefix"` flag; 2) chromosome number placed between curly braces, {}, after the `"--chr"` flag; and 3) the prefix of an output filename (without a file extension) after the `"--output"` flag. This script will automatically generate a `*.bed` file.
+`“--sort-ancestry”` is an optional flag that can be used to sort by ancestry. Importantly, the population ancestry name provided after the `“--sort-ancestry”` flag must be identical to the population ancestry name specified in the header of the `*.rfmix.Q` output file. The script will then sort this ancestry from the largest ancestry proportion to the smallest.
 
 Example of basic usage:
 
@@ -124,23 +127,24 @@ Example of basic usage:
 python Scripts/RFMIX2ToBed4GAP.py --prefix ../Example_Dataset/RFMIX2_Output/Mozabite --chr {1..22} --output Output_GAP
 </code></pre>
 
-Example of basic usage for target chromosomes:
+Example of basic usage for `target chromosomes`:
 
 <pre><code>
 python Scripts/RFMIX2ToBed4GAP.py --prefix ../Example_Dataset/RFMIX2_Output/Mozabite --chr 2 5 7 --output Output_GAP
 </code></pre>
 
-Example of usage with “--sort-ancestry” flag:
+Example of usage with `“--sort-ancestry”` flag:
 
 <pre><code>
 python Scripts/RFMIX2ToBed4GAP.py --prefix ../Example_Dataset/RFMIX2_Output/Mozabite --chr {1..22} --output Output_GAP/ --sort-ancestry Middle_East
 </code></pre>
 
-**Step 2**
+**Step 2:**
+
 Create the input file for GAP to visualize the global ancestry proportions.
 The output file generated in Step 1 will serve as the input file for Step 2. However, there are additional options that users may wish to consider. These options can be accessed by typing the following command:
 
-python BedToGAP.py --help
+`python BedToGAP.py --help`
 
 Basic command line:
 
@@ -148,27 +152,28 @@ Basic command line:
 python BedToGAP.py --input [argument] --ancestry [argument] --out [argument]
 </code></pre>
 
-where the “--input” flag accepts the file name from Step 1 (*.bed), and the “--out” flag accepts the user-specified output file name with the *.bed extension. If specified, the --ancestry flag requires two arguments: 1) population ancestry name, and 2) the hex color code, which can be found on any website on the internet (e.g., computerhope.com). It is important to note, however, that the population ancestry name provided after the “--ancestry” flag must be identical to the population ancestry name in the header of the output file from Step 1. By default, this script can assign up to ten distinct colors, one for each ancestry component. Alternatively, users can assign their own colors to ancestry components using the “--ancestry” flags.
+where the `“--input”` flag accepts the file name from Step 1 `(*.bed)`, and the `“--out”` flag accepts the user-specified output file name with the *.bed extension. If specified, the `--ancestry` flag requires two arguments: 1) population ancestry name, and 2) the hex color code, which can be found on any website on the internet (e.g., computerhope.com). It is important to note, however, that the population ancestry name provided after the `“--ancestry”` flag must be identical to the population ancestry name in the header of the output file from Step 1. By default, this script can assign up to ten distinct colors, one for each ancestry component. Alternatively, users can assign their own colors to ancestry components using the `“--ancestry”` flags.
 
-Example of basic usage (with default ancestry colors):
+Example of basic usage `(with default ancestry colors)`:
 
 <pre><code>
 python Scripts/BedToGAP.py --input Output_GAP/Mozabite.bed --out Output_GAP/Mozabite_GAP.bed
 </code></pre>
 
-Example of usage with “--ancestry” flag (for user-specified colors):
+Example of usage with `“--ancestry”` flag (for user-specified colors):
 
 <pre><code>
 python Scripts/BedToGAP.py --input Output_GAP/Mozabite.bed --ancestry0 Africa #a38905 --ancestry1 Europe #a30d05 --ancestry2 Middle_East #0e6b05 --out Output_GAP/Mozabite_GAP.bed
 </code></pre>
 
-**Step 3** 
+**Step 3:** 
+
 Generate the plot for global ancestry proportion with GAP.py.
 In this step, GAP.py requires a single input file name and a user-specified output file name as arguments:
 
-python GAP.py --input [argument] --output [argument]
+`python GAP.py --input [argument] --output [argument]`
 
-where users will enter the output file name from Step 2 as an argument for the “--input" flag. Furthermore, users also must specify the output filename, adding either a “.pdf” or a “.svg” extension to the end. This script will generate an output file with ancestry proportions for each individual in a bar plot in either “pdf” or “svg” format.
+where users will enter the output file name from Step 2 as an argument for the `“--input"` flag. Furthermore, users also must specify the output filename, adding either a `“.pdf”` or a `“.svg”` extension to the end. This script will generate an output file with ancestry proportions for each individual in a bar plot in either “pdf” or “svg” format.
 
 Examples of usage:
 
@@ -196,31 +201,32 @@ Before proceeding with the pipelines for LAP, users must ensure they have the fo
 
 These packages can be installed with pip or pip3:
 
-pip3 install argparse
+`pip3 install argparse`
 
-Users will also need to install a library (“librsvg”) to create, edit, and convert pdf and svg files. This library can be installed on a MacOS machine with the following command typed in a Terminal window:
+Users will also need to install a library `(“librsvg”)` to create, edit, and convert pdf and svg files. This library can be installed on a MacOS machine with the following command typed in a Terminal window:
 
-brew install rsvg
+`brew install rsvg`
 
 Alternatively, this library can be downloaded manually from: https://download.gnome.org/sources/librsvg.
 In addition, the “librsvg” library can be installed on a Linux/Ubuntu/Debian machine with the following command typed in a Terminal window:
 
-sudo apt-get install -y librsvg2-dev
+`sudo apt-get install -y librsvg2-dev`
 
 Alternatively, this library can be downloaded manually from https://manpages.ubuntu.com/manpages/trusty/man1/rsvg-convert.1.html
 The LAP pipeline consists of three separate Python scripts: 1) RFMIX2ToBed.py; 2) BedToLAP.py; 3) LAP.py. Users will need to change their working directory to “LAP” in the “RFMIX2-Pipeline-to-plot-main” folder (e.g., cd RFMIX2-Pipeline-to-plot-main/LAP/).
 
-**Step 1**
-Combine the output files from RFMIX2 into a single file and generate *.bed input files with RFMIX2ToBed.py.
-RFMIX2 generates a *.msp.tsv (local ancestry information) output file for each chromosome for a given individual. Users must ensure that the output file names from RFMIX2 include the name of the individual (e.g., Mozabite1) followed by “_chr” and then the chromosome number (e.g., _chr2 for chromosome 2). This entire name or prefix must precede the *. msp.tsv extension (e.g., Mozabite1_chr2.msp.tsv).
+**Step 1:**
+
+Combine the output files from RFMIX2 into a single file and generate `*.bed` input files with `RFMIX2ToBed.py`.
+RFMIX2 generates a `*.msp.tsv` (local ancestry information) output file for each chromosome for a given individual. Users must ensure that the output file names from RFMIX2 include the name of the individual (e.g., Mozabite1) followed by `“_chr”` and then the chromosome number (e.g., _chr2 for chromosome 2). This entire name or prefix must precede the *. msp.tsv extension (e.g., Mozabite1_chr2.msp.tsv).
 
 In this step, we recommend that users acquaint themselves with the usage of this Python script by typing the following command:
 
-<pre><code>
-python Scripts/RFMIX2ToBed.py --help
-</code></pre>
 
-As stated above, RFMIX2 generates a *.msp.tsv (local ancestry information) output file for each chromosome for a given individual. Users will combine these chromosomes into a single file for each individual, which will contain header and ancestry information for all chromosomes for each individual in the dataset.
+`python Scripts/RFMIX2ToBed.py --help`
+
+
+As stated above, RFMIX2 generates a `*.msp.tsv` (local ancestry information) output file for each chromosome for a given individual. Users will combine these chromosomes into a single file for each individual, which will contain header and ancestry information for all chromosomes for each individual in the dataset.
 
 Basic command line:
 
@@ -228,9 +234,9 @@ Basic command line:
 python RFMIX2ToBed.py --prefix [argument] --chr [argument] --output [argument]
 </code></pre>
 
-where users are required to: 1) enter the prefix of the RFMIX2 output filename (without the file extension) after the "--prefix" flag; 2) enter a range of chromosome numbers placed between curly braces, {}, after the "--chr" flag; and 3) provide the pathway to where the output files will be saved. File names for the output files are NOT required.
+where users are required to: 1) enter the prefix of the RFMIX2 output filename (without the file extension) after the `"--prefix"` flag; 2) enter a range of chromosome numbers placed between curly braces, {}, after the `"--chr"` flag; and 3) provide the pathway to where the output files will be saved. File names for the output files are NOT required.
 
-The RFMIX2ToBed.py script will automatically generate two .bed files (_hap1.bed and *_hap2.bed) for each individual with the same prefix. The *_hap1.bed and *_hap2.bed files correspond to diploid chromosomes (i.e., the maternal and paternal copies of chromosomes).
+The RFMIX2ToBed.py script will automatically generate two .bed files `(_hap1.bed and *_hap2.bed)` for each individual with the same prefix. The `*_hap1.bed and` `*_hap2.bed` files correspond to diploid chromosomes (i.e., the maternal and paternal copies of chromosomes).
 
 Example of usage:
 
@@ -238,16 +244,17 @@ Example of usage:
 python Scripts/RFMIX2ToBed.py --prefix ../Example_Dataset/RFMIX2_Output/Mozabite --chr {1..22} --output Output_LAP/
 </code></pre>
 
-Alternatively, if users require a subset of chromosomes in a single file, they can run the following command:
+Alternatively, if users require a `subset of chromosomes` in a single file, they can run the following command:
 
 <pre><code>
 python Scripts/RFMIX2ToBed.py --prefix ../Example_Dataset/RFMIX2_Output/Mozabite --chr 2 3 5 7 --output Output_LAP/
 </code></pre>
 
-In this scenario, specific chromosome numbers, separated by spaces, will appear after the “--chr" flag.
+In this scenario, specific chromosome numbers, separated by spaces, will appear after the `“--chr"` flag.
 In either example, the RFMIX2ToBed.py script will generate two output files for each individual, namely Mozabite1_hap1.bed and Mozabite1_hap2.bed.
 
-**Step 2**
+**Step 2:**
+
 Create the color scheme for ancestry painting along chromosomes with BedToLAP.py.
 In this step, we recommend that users acquaint themselves with the usage of this Python script by typing the following command in the Terminal window:
 
@@ -261,7 +268,7 @@ Basic command line:
 python BedToLAP.py --bed1 [argument] --bed2 [argument] --out [argument]
 </code></pre>
 
-where users will provide; 1) *_hap1.bed filename after the “–-bed1” flag (from Step 1); 2) the *_hap2.bed filename after the “--bed2” flag (from Step 1); and 3) a user-specified output filename with the *.bed extension after the “--out" flag. The *.bed extension must be added to the output file name; otherwise, the output file cannot be used in the next step (Step 3).
+where users will provide; 1) `*_hap1.bed` filename after the `“–-bed1”` flag (from Step 1); 2) the `*_hap2.bed` filename after the `“--bed2”` flag (from Step 1); and 3) a user-specified output filename with the `*.bed ` extension after the `“--out"` flag. The *.bed extension must be added to the output file name; otherwise, the output file cannot be used in the next step (Step 3).
 
 Example of usage:
 
@@ -269,9 +276,9 @@ Example of usage:
 for i in {1..27}; do python Scripts/BedToLAP.py --bed1 Output_LAP/Mozabite${i}_hap1.bed --bed2 Output_LAP/Mozabite${i}_hap2.bed --out Output_LAP/Mozabite${i}.bed; done
 </code></pre>
 
-where variable i in a for loop refers to the individuals in the dataset (1 through 27). This script will automatically assign a default color to each ancestry component (default colors for a maximum of ten ancestry components will be generated). However, users can also choose up to ten distinct colors, one for each ancestry component with the “--ancestry" flag (please use "python BedToLap.py --help" to see the options). The “--ancestry" flag requires two single arguments: 1) population ancestry name, and 2) the hex color code, which can be found on any website on the internet (e.g., computerhope.com). Again, the population ancestry must be identical to the population ancestry name present in the header of the output file from RFMIX2.
+where variable i in a for loop refers to the individuals in the dataset (1 through 27). This script will automatically assign a default color to each ancestry component (default colors for a maximum of ten ancestry components will be generated). However, users can also choose up to ten distinct colors, one for each ancestry component with the `“--ancestry"` flag (please use "python BedToLap.py --help" to see the options). The `“--ancestry"` flag requires two single arguments: 1) population ancestry name, and 2) the hex color code, which can be found on any website on the internet (e.g., computerhope.com). Again, the population ancestry must be identical to the population ancestry name present in the header of the output file from RFMIX2.
 
-In addition, to highlight a specific gene or genomic region on a chromosome, users can run the same command as above with additional parameters. Specifically,
+In addition, to `highlight a specific gene or genomic region on a chromosome`, users can run the same command as above with additional parameters. Specifically,
 
 <pre><code>
 for i in {1..27}; do python Scripts/BedToLAP.py --bed1 Output_LAP/Mozabite${i}_hap1.bed --bed2 Output_LAP/Mozabite${i}_hap2.bed --out Output_LAP/Mozabite${i}.bed --chr 2 --from-bp 135787850 --to-bp 155837184; done
@@ -279,11 +286,12 @@ for i in {1..27}; do python Scripts/BedToLAP.py --bed1 Output_LAP/Mozabite${i}_h
 
 where variable i in a for loop refers to the individuals (1 through 27) in the dataset; “--chr" accepts a chromosome number as an argument; --from-bp and --to-bp flags require the start and end positions of a gene or genomic region of interest in base pairs, respectively; a dashed black line, indicating a gene or genomic region of interest, will be added to the final plot generated in Step 3.
 
-**Step 3**
+**Step 3:**
+
 Generate the ancestry plot for each chromosome with LAP.py.
 In this step, we suggest that users acquaint themselves with the usage of the LAP.py script by typing:
 
-python LAP.py --help
+`python LAP.py --help`
 
 Basic command line:
 
