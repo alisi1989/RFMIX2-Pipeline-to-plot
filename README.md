@@ -16,6 +16,7 @@ Furthermore, the reference file also should be in VCF and phased. However, in th
 Create a sample map file in *.ref or *.txt tab-delimited format. The map file should only contain individuals from the reference dataset (and none of the target individuals). The first column should list the individuals in the same order as they appear in the VCF file. The second column should specify the ancestry name (or classification), which is determined by the user. Please see an example of a sample map file in tab-delimited format below:
 
 <pre>
+<code>
 ind1	Africa 
 ind2	Africa 
 ind3	Africa 
@@ -25,7 +26,10 @@ ind6	MiddleEast
 ind7	MiddleEast 
 ind8	MiddleEast 
 ind9	MiddleEast 
+<code>
 <pre>
+
+
 
 3. Execute RFMIX2
 
@@ -34,6 +38,7 @@ RFMIX2 analyzes one individual at a time. Consequently, users might consider emp
 Furthermore, the genetic map file should contain all chromosomes together (e.g., 1 through 22 for autosomal DNA). In this file, the columns should be chromosome, position, and cM, respectively, in tab-delimited format. Please see an example of the genetic map file below:
 
 <pre>
+<code>
 chr    pos    cM
 chr1   55550  0
 chr1   82571  0.080572
@@ -41,7 +46,10 @@ chr1   88169  0.092229
 chr1   285245 0.439456
 chr1   629218 1.478148
 chr1   629241 1.478214
+<code>
 <pre>
+
+
 
 To run RFMIX2, users will need the following:
 
