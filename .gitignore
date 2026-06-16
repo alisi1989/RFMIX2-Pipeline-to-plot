@@ -1,0 +1,7 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+*.tmp
+*.log
+*_zoom/
+*.variant_ancestry.txt

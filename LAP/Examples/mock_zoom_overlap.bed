@@ -1,0 +1,17 @@
+#Subpopulation order/codes: Europeans=0 Middle_East=1 North_Africa=2 SubSaharan_Africa=3
+#LAP ancestry/colors:	Europeans=#d18311	Middle_East=#22ba9d	North_Africa=#839dfc	SubSaharan_Africa=#9a5dc1
+#LAP FLARE SNP columns: chrom start end geom_snp color haplotype variant_id vcf_sample ancestry_label ancestry_code snp_label
+chr4	0	44000000	geom_rect	#d18311	1
+chr4	44000000	52000000	geom_rect	#22ba9d	1
+chr4	52000000	190214555	geom_rect	#d18311	1
+chr4	0	45000000	geom_rect	#d18311	2
+chr4	45000000	50000000	geom_rect	#9a5dc1	2
+chr4	50000000	190214555	geom_rect	#d18311	2
+chr4	46567563	46567563	geom_snp	#22ba9d	1	4:46567563:A:G	MOCK_SAMPLE	Middle_East	1	SNP1
+chr4	46567563	46567563	geom_snp	#9a5dc1	2	4:46567563:A:G	MOCK_SAMPLE	SubSaharan_Africa	3	SNP1
+chr4	46568120	46568120	geom_snp	#22ba9d	1	4:46568120:C:T	MOCK_SAMPLE	Middle_East	1	SNP2
+chr4	46568120	46568120	geom_snp	#9a5dc1	2	4:46568120:C:T	MOCK_SAMPLE	SubSaharan_Africa	3	SNP2
+chr4	46569440	46569440	geom_snp	#d18311	1	4:46569440:G:A	MOCK_SAMPLE	Europeans	0	SNP3
+chr4	46569440	46569440	geom_snp	#9a5dc1	2	4:46569440:G:A	MOCK_SAMPLE	SubSaharan_Africa	3	SNP3
+chr4	80000000	80000000	geom_snp	#d18311	1	4:80000000:T:C	MOCK_SAMPLE	Europeans	0	SNP4
+chr4	80000000	80000000	geom_snp	#d18311	2	4:80000000:T:C	MOCK_SAMPLE	Europeans	0	SNP4

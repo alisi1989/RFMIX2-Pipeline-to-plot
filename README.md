@@ -1,313 +1,846 @@
+# AncestryGrapher Toolkit
+
 Authors: Alessandro Lisi and Michael C. Campbell  
-(Human Evolutionary Genomics Lab @ USC, Department of Biological Sciences, Human and Evolutionary Biology section)
+Human Evolutionary Genomics Lab, Department of Biological Sciences, Human and Evolutionary Biology section, University of Southern California
 
-In this README file, we present a method for plotting the output of RFMIX version 2 (RFMIX2). This document will guide users through the process of applying RFMIX2 to analyze phased VCF files, converting the results to a *.bed format, and visualizing global and local ancestry using GAP and LAP, respectively.
+AncestryGrapher is a command-line toolkit for converting RFMix v2 local and global ancestry output into publication-ready ancestry visualizations. The toolkit contains two companion workflows:
 
-1. **Prepare Input Dataset**
+- **GAP, Global Ancestry Painting:** summarizes and plots genome-wide ancestry proportions from RFMix `.rfmix.Q` files.
+- **LAP, Local Ancestry Painting:** paints local ancestry tracts along human autosomes from RFMix `.msp.tsv` files.
 
-   The target file must be in VCF and phased with one individual per VCF. This VCF should contain all chromosomes together. 
+The current LAP workflow also supports **FLARE ancestry VCFs** (`.anc.vcf` / `.anc.vcf.gz`) for SNP-aware visualization and variant-level reporting. When a user supplies a list of variants, LAP can draw haplotype-resolved SNP markers on the karyotype and write a LAP-VAR report describing the ancestry of the haplotype carrying each allele.
 
-   Furthermore, the reference file also should be in VCF and phased. However, in this case, the reference file should be split into individual chromosomes (e.g., 1 through 22 if users are interested in autosomal DNA).
+The repository keeps the original RFMix-oriented structure:
 
-2. **Create a Sample Map File**
+```text
+RFMIX2-Pipeline-to-plot/
+├── GAP/
+│   └── Scripts/
+│       ├── Gap_v2.py
+│       ├── GAP_Plot.py
+│       └── GAP.py                 # compatibility wrapper for GAP_Plot.py
+├── LAP/
+│   ├── hg38.svg
+│   ├── hg37.svg
+│   ├── README_LAP_FLARE.md
+│   ├── README_ZOOM_PANELS.md
+│   ├── Examples/
+│   │   └── mock_zoom_overlap.bed
+│   └── Scripts/
+│       ├── LAP_v4.py
+│       ├── Plot_LAP_v4.py
+│       └── LAP.py                 # compatibility wrapper for Plot_LAP_v4.py
+├── Genetic_Map/
+├── Sample_map_File/
+├── Example_Dataset/
+└── README.md
+```
 
-   Create a sample map file in *.ref or *.txt tab-delimited format. The map file should only contain individuals from the reference dataset (and none of the target individuals). The first column should list the individuals in the same order as they appear in the VCF file. The second column should specify the ancestry name (or classification), which is determined by the user. Please see an example of a sample map file in tab-delimited format below:
-
-   <pre>
-   ind1    Africa 
-   ind2    Africa 
-   ind3    Africa 
-   ind4    Europe 
-   ind5    Europe 
-   ind6    MiddleEast
-   ind7    MiddleEast 
-   ind8    MiddleEast 
-   ind9    MiddleEast 
-   </pre>
-
-3. **Execute RFMIX2**
-
-   RFMIX2 analyzes one individual at a time. Consequently, users might consider employing a for loop that includes all target individuals in a given dataset, which will generate multiple output files for each individual.
-
-   Furthermore, the genetic map file should contain all chromosomes together (e.g., 1 through 22 for autosomal DNA). In this file, the columns should be chromosome, position, and cM, respectively, in tab-delimited format. Please see an example of the genetic map file below:
-
-   <pre>
-   chr    pos    cM
-   chr1   55550  0
-   chr1   82571  0.080572
-   chr1   88169  0.092229
-   chr1   285245 0.439456
-   chr1   629218 1.478148
-   chr1   629241 1.478214
-   </pre>
-
-   To run RFMIX2, users will need the following:
-
-   -f target VCF/BCF file \ # vcf/bcf file containing data from the target population(s)  
-   -r reference VCF/BCF file \ # vcf file containing data from the reference population(s)  
-   -m target map file \ # file containing genetic map for SNP loci in the target population  
-   -g genetic map file \ # file containing genetic map for SNP loci in the reference population  
-   -o output basename \ # the prefix of an output file name (without an extension)  
-   --chromosome #chromosome to analyze
-
-   The genetic map for each chromosome is provided in the `“Genetic_Map”` folder in the `“RFMIX2-Pipeline-to-plot-main”` directory.
-
-   Example of basic usage:
-
-   To run the RFMIX2 software, users can specify the command below. If users wish to change the window size of local ancestry, we recommend they refer to the RFMIX2 manual.
-
-   <pre><code>
-   for i in {1..22}; do
-       for j in {1..27}; do
-           rfmix -f Example_Dataset/Target/Mozabite_${j}.vcf.gz \
-                 -r Example_Dataset/Reference/Reference_Phased_chr${i}.vcf.gz \
-                 -m Sample_map_File/Sample_Reference.txt \
-                 -g Genetic_Map/chr${i}.b38.txt \
-                 -o Example_Dataset/RFMIX2_Output/Mozabite${j}_chr${i} \
-                 --chromosome=${i}
-       done
-   done
-   </code></pre>
-
-   where variable `i` in a for loop refers to chromosome number (in this case, chromosomes 1 through 22); variable `j` in a for loop refers to the individuals in the dataset (in this case, 1 through 27). 
-
-   It is important to note that the output file name (in this case, `Mozabite${j}_chr${i}`) must contain the individual name (`Mozabite${j}`) followed by “_chr” and then the chromosome number (`${i}`).
-
-   After running RFMIX2, four different types of output files are generated for each chromosome: 1) `*.rfmix.Q` (global ancestry); 2) `*.tsv` (marginal probability); 3) `*.sis.tsv` (condensed information from *.msp.tsv); and 4) `*.msp.tsv` (crf point). Of these different output files, the `*.rfmix.Q` and the `*.msp.tsv` will be the input files in the AncestryGrapher toolkit pipelines. 
+The historical helper scripts are still present for compatibility, but the recommended current workflows are `Gap_v2.py` for GAP and `LAP_v4.py` plus `Plot_LAP_v4.py` for LAP.
 
 ---
 
-**Overview of the AncestryGrapher toolkit**
+## 1. Installation
 
-Indeed, inferences of genetic ancestry are informative for mapping the population origins of genetic risk alleles associated with complex diseases (Cheng et al. 2009; Daya et al. 2014; Freedman et al. 2006) and for understanding the genetic history of admixed populations, including the timing of admixture events (Browning, Waples, and Browning 2023; Daya et al. 2014; Uren, Hoal, and Möller 2020). 
+AncestryGrapher is written in Python and runs on macOS and Linux. Windows users can run it through Anaconda, WSL, or another Unix-like Python environment.
 
-The AncestryGrapher toolkit enables users to visualize global and local ancestry with two distinct pipelines, Global Ancestry Painting (GAP) and Local Ancestry Painting (LAP), that run in a command-line Terminal window on Mac OS X and Linux machines. To execute these pipelines on a Microsoft Windows computer, users will need to install the Anaconda command-line environment on the host machine. 
+Clone the repository:
 
-The AncestryGrapher toolkit can be downloaded to users’ local computers by pressing the “code” button shaded in green on the Github page `(https://github.com/alisi1989/RFMIX2-Pipeline-to-plot.git)`. Using the command-line interface in the Terminal window, users will change the current working directory to the directory where the downloaded “RFMIX2-Pipeline-to-plot-main.zip” folder is located. To unzip this folder, type `“unzip RFMIX2-Pipeline-to-plot-main.zip”` at the command line prompt (typically indicated by a “$” sign), and the uncompressed `“RFMIX2-Pipeline-to-plot-main”` folder will appear. To demonstrate the utility of our method, we applied the AncestryGrapher toolkit to the output files from an RFMIX2 analysis of the Finnish (European), Mozabite Berber (North African), and Bedouin (Middle Eastern) populations.  
+```bash
+git clone https://github.com/alisi1989/RFMIX2-Pipeline-to-plot.git
+cd RFMIX2-Pipeline-to-plot
+```
 
----
+Install Python dependencies:
 
-**Global Ancestry Painting (GAP)**
+```bash
+python3 -m pip install -r requirements.txt
+```
 
-Before proceeding with the pipelines for LAP, users must ensure they have the following Python packages installed:
+The core Python dependencies are:
 
-1. "argparse"
-2. "pandas"
-3. "matplotlib"
-4. "king"
-5. "glob"
-6. "numpy"
-7. "os"
-8. "click"
+```text
+pandas
+numpy
+matplotlib
+```
 
-These packages can be installed with pip or pip3:
+For the historical SVG-to-PDF backend, install `librsvg`:
 
+```bash
+brew install librsvg
+```
 
-`pip3 install argparse`
+On Debian/Ubuntu:
 
-The GAP pipeline consists of three separate Python scripts: 1) RFMIX2ToBed4GAP.py; 2) BedToGAP.py (this script creates the input file for GAP); 3) GAP.py. Users will need to change their working directory to “GAP” in the “RFMIX2-Pipeline-to-plot-main” directory (e.g., cd RFMIX2-Pipeline-to-plot-main/GAP/).
+```bash
+sudo apt-get install -y librsvg2-bin
+```
 
-**Step 1:**
-
-Combine the RFMIX2 output files for all the chromosomes per individual into a single file and merge all the individuals together.
-The RFMIX2 software generates a `*.rfmix.Q` (global ancestry information) output file for each chromosome per individual. Users must ensure that the output file names from RFMIX2 include the name of the individual (e.g., Mozabite1) followed by `“_chr”` and then the chromosome number (e.g., `_chr2` for chromosome 2). This entire name or prefix must appear before the `*.rfmix.Q` extension `(e.g., Mozabite1_chr2.rfmix.Q)`.
-To combine chromosomes per individual into a single file, users will execute the Python script below:
-Basic command line:
-
-<pre><code>
-python RFMIX2ToBed4GAP.py --prefix [argument] --chr [argument] --output [argument] --sort-ancestry [argument]
-</code></pre>
-
-where users need to enter: 1) the prefix of the RFMIX2 output filename (without the file extension) after the `"--prefix"` flag; 2) chromosome number placed between curly braces, {}, after the `"--chr"` flag; and 3) the prefix of an output filename (without a file extension) after the `"--output"` flag. This script will automatically generate a `*.bed` file.
-`“--sort-ancestry”` is an optional flag that can be used to sort by ancestry. Importantly, the population ancestry name provided after the `“--sort-ancestry”` flag must be identical to the population ancestry name specified in the header of the `*.rfmix.Q` output file. The script will then sort this ancestry from the largest ancestry proportion to the smallest.
-
-Example of basic usage:
-
-<pre><code>
-python Scripts/RFMIX2ToBed4GAP.py --prefix ../Example_Dataset/RFMIX2_Output/Mozabite --chr {1..22} --output Output_GAP
-</code></pre>
-
-Example of basic usage for `target chromosomes`:
-
-<pre><code>
-python Scripts/RFMIX2ToBed4GAP.py --prefix ../Example_Dataset/RFMIX2_Output/Mozabite --chr 2 5 7 --output Output_GAP
-</code></pre>
-
-Example of usage with `“--sort-ancestry”` flag:
-
-<pre><code>
-python Scripts/RFMIX2ToBed4GAP.py --prefix ../Example_Dataset/RFMIX2_Output/Mozabite --chr {1..22} --output Output_GAP/ --sort-ancestry Middle_East
-</code></pre>
-
-**Step 2:**
-
-Create the input file for GAP to visualize the global ancestry proportions.
-The output file generated in Step 1 will serve as the input file for Step 2. However, there are additional options that users may wish to consider. These options can be accessed by typing the following command:
-
-`python BedToGAP.py --help`
-
-Basic command line:
-
-<pre><code>
-python BedToGAP.py --input [argument] --ancestry [argument] --out [argument]
-</code></pre>
-
-where the `“--input”` flag accepts the file name from Step 1 `(*.bed)`, and the `“--out”` flag accepts the user-specified output file name with the *.bed extension. If specified, the `--ancestry` flag requires two arguments: 1) population ancestry name, and 2) the hex color code, which can be found on any website on the internet (e.g., computerhope.com). It is important to note, however, that the population ancestry name provided after the `“--ancestry”` flag must be identical to the population ancestry name in the header of the output file from Step 1. By default, this script can assign up to ten distinct colors, one for each ancestry component. Alternatively, users can assign their own colors to ancestry components using the `“--ancestry”` flags.
-
-Example of basic usage `(with default ancestry colors)`:
-
-<pre><code>
-python Scripts/BedToGAP.py --input Output_GAP/Mozabite.bed --out Output_GAP/Mozabite_GAP.bed
-</code></pre>
-
-Example of usage with `“--ancestry”` flag (for user-specified colors):
-
-<pre><code>
-python Scripts/BedToGAP.py --input Output_GAP/Mozabite.bed --ancestry0 Africa #a38905 --ancestry1 Europe #a30d05 --ancestry2 Middle_East #0e6b05 --out Output_GAP/Mozabite_GAP.bed
-</code></pre>
-
-**Step 3:** 
-
-Generate the plot for global ancestry proportion with GAP.py.
-In this step, GAP.py requires a single input file name and a user-specified output file name as arguments:
-
-`python GAP.py --input [argument] --output [argument]`
-
-where users will enter the output file name from Step 2 as an argument for the `“--input"` flag. Furthermore, users also must specify the output filename, adding either a `“.pdf”` or a `“.svg”` extension to the end. This script will generate an output file with ancestry proportions for each individual in a bar plot in either “pdf” or “svg” format.
-
-Examples of usage:
-
-<pre><code>
-python Scripts/GAP.py --input Output_GAP/Mozabite_GAP.bed --output Output_GAP/Mozabite_GAP.pdf
-</code></pre>
-
-<pre><code>
-python Scripts/GAP.py --input Output_GAP/Mozabite_GAP.bed --output Output_GAP/Mozabite_GAP.svg
-</code></pre>
+If `rsvg-convert` is not available, LAP can still write SVG files with `--svg-only`, or can write direct vector PDFs with `--pdf-backend native`.
 
 ---
 
-**Local Ancestry Painting (LAP)**
+## 2. Input Data Before AncestryGrapher
 
-Before proceeding with the pipelines for LAP, users must ensure they have the following Python packages installed:
-"argparse"
-"pandas"
-"matplotlib"
-"king"
-"glob"
-"numpy"
-"os"
-"click"
+AncestryGrapher expects RFMix v2 output. The usual upstream workflow is:
 
-These packages can be installed with pip or pip3:
+1. Phase target and reference VCFs.
+2. Run RFMix v2 chromosome by chromosome.
+3. Use the RFMix `.rfmix.Q` files for GAP.
+4. Use the RFMix `.msp.tsv` files for LAP.
+5. Optionally, use FLARE `.anc.vcf.gz` files plus a SNP list for LAP-VAR and SNP-aware plotting.
 
-`pip3 install argparse`
+### Target VCFs
 
-Users will also need to install a library `(“librsvg”)` to create, edit, and convert pdf and svg files. This library can be installed on a MacOS machine with the following command typed in a Terminal window:
+The target VCF should be phased. RFMix is commonly run chromosome by chromosome. The exact input layout can vary, but the final RFMix output names should make the chromosome recoverable from the filename.
 
-`brew install rsvg`
+Recommended naming:
 
-Alternatively, this library can be downloaded manually from: https://download.gnome.org/sources/librsvg.
-In addition, the “librsvg” library can be installed on a Linux/Ubuntu/Debian machine with the following command typed in a Terminal window:
+```text
+target_prefix_chr1.rfmix.Q
+target_prefix_chr1.msp.tsv
+target_prefix_chr2.rfmix.Q
+target_prefix_chr2.msp.tsv
+...
+target_prefix_chr22.rfmix.Q
+target_prefix_chr22.msp.tsv
+```
 
-`sudo apt-get install -y librsvg2-dev`
+For single-sample legacy runs, filenames may include the sample name:
 
-Alternatively, this library can be downloaded manually from https://manpages.ubuntu.com/manpages/trusty/man1/rsvg-convert.1.html
-The LAP pipeline consists of three separate Python scripts: 1) RFMIX2ToBed.py; 2) BedToLAP.py; 3) LAP.py. Users will need to change their working directory to “LAP” in the “RFMIX2-Pipeline-to-plot-main” folder (e.g., cd RFMIX2-Pipeline-to-plot-main/LAP/).
+```text
+Mozabite1_chr4.rfmix.Q
+Mozabite1_chr4.msp.tsv
+```
 
-**Step 1:**
+For multi-sample runs, one file per chromosome can contain many target individuals:
 
-Combine the output files from RFMIX2 into a single file and generate `*.bed` input files with `RFMIX2ToBed.py`.
-RFMIX2 generates a `*.msp.tsv` (local ancestry information) output file for each chromosome for a given individual. Users must ensure that the output file names from RFMIX2 include the name of the individual (e.g., Mozabite1) followed by `“_chr”` and then the chromosome number (e.g., _chr2 for chromosome 2). This entire name or prefix must precede the *. msp.tsv extension (e.g., Mozabite1_chr2.msp.tsv).
+```text
+target_covid_kinPass_chr4.rfmix.Q
+target_covid_kinPass_chr4.msp.tsv
+```
 
-In this step, we recommend that users acquaint themselves with the usage of this Python script by typing the following command:
+The current GAP and LAP scripts handle the multi-sample RFMix layout.
 
+### Reference Sample Map
 
-`python Scripts/RFMIX2ToBed.py --help`
+RFMix requires a sample map for the reference individuals. The file is tab-delimited and contains no target individuals:
 
+```text
+ind1    Africa
+ind2    Africa
+ind3    Africa
+ind4    Europe
+ind5    Europe
+ind6    Middle_East
+ind7    Middle_East
+ind8    Middle_East
+```
 
-As stated above, RFMIX2 generates a `*.msp.tsv` (local ancestry information) output file for each chromosome for a given individual. Users will combine these chromosomes into a single file for each individual, which will contain header and ancestry information for all chromosomes for each individual in the dataset.
+The ancestry labels in this file become the ancestry names used by RFMix and then by AncestryGrapher. Keep labels stable and avoid accidental spelling differences such as `MiddleEast` versus `Middle_East`.
 
-Basic command line:
+### Genetic Map
 
-<pre><code>
-python RFMIX2ToBed.py --prefix [argument] --chr [argument] --output [argument]
-</code></pre>
+The `Genetic_Map/` directory contains hg38 genetic maps for chromosomes 1 through 22. RFMix expects genetic map files with columns similar to:
 
-where users are required to: 1) enter the prefix of the RFMIX2 output filename (without the file extension) after the `"--prefix"` flag; 2) enter a range of chromosome numbers placed between curly braces, {}, after the `"--chr"` flag; and 3) provide the pathway to where the output files will be saved. File names for the output files are NOT required.
+```text
+chr    pos     cM
+chr1   55550   0
+chr1   82571   0.080572
+chr1   88169   0.092229
+chr1   285245  0.439456
+```
 
-The RFMIX2ToBed.py script will automatically generate two .bed files `(_hap1.bed and *_hap2.bed)` for each individual with the same prefix. The `*_hap1.bed and` `*_hap2.bed` files correspond to diploid chromosomes (i.e., the maternal and paternal copies of chromosomes).
+### Example RFMix v2 Command
 
-Example of usage:
+The exact command depends on how the user's data are organized. A typical loop is:
 
-<pre><code>
-python Scripts/RFMIX2ToBed.py --prefix ../Example_Dataset/RFMIX2_Output/Mozabite --chr {1..22} --output Output_LAP/
-</code></pre>
+```bash
+for chr in {1..22}; do
+  rfmix \
+    -f Example_Dataset/Target/Mozabite_1.vcf.gz \
+    -r Example_Dataset/Reference/Reference_Phased_chr${chr}.vcf.gz \
+    -m Sample_map_File/Sample_Reference.txt \
+    -g Genetic_Map/chr${chr}.b38.txt \
+    -o Example_Dataset/RFMIX2_Output/Mozabite1_chr${chr} \
+    --chromosome=${chr}
+done
+```
 
-Alternatively, if users require a `subset of chromosomes` in a single file, they can run the following command:
+Important RFMix outputs:
 
-<pre><code>
-python Scripts/RFMIX2ToBed.py --prefix ../Example_Dataset/RFMIX2_Output/Mozabite --chr 2 3 5 7 --output Output_LAP/
-</code></pre>
-
-In this scenario, specific chromosome numbers, separated by spaces, will appear after the `“--chr"` flag.
-In either example, the RFMIX2ToBed.py script will generate two output files for each individual, namely Mozabite1_hap1.bed and Mozabite1_hap2.bed.
-
-**Step 2:**
-
-Create the color scheme for ancestry painting along chromosomes with BedToLAP.py.
-In this step, we recommend that users acquaint themselves with the usage of this Python script by typing the following command in the Terminal window:
-
-<pre><code>
-python BedToLAP.py --help
-</code></pre>
-
-Basic command line:
-
-<pre><code>
-python BedToLAP.py --bed1 [argument] --bed2 [argument] --out [argument]
-</code></pre>
-
-where users will provide; 1) `*_hap1.bed` filename after the `“–-bed1”` flag (from Step 1); 2) the `*_hap2.bed` filename after the `“--bed2”` flag (from Step 1); and 3) a user-specified output filename with the `*.bed ` extension after the `“--out"` flag. The *.bed extension must be added to the output file name; otherwise, the output file cannot be used in the next step (Step 3).
-
-Example of usage:
-
-<pre><code>
-for i in {1..27}; do python Scripts/BedToLAP.py --bed1 Output_LAP/Mozabite${i}_hap1.bed --bed2 Output_LAP/Mozabite${i}_hap2.bed --out Output_LAP/Mozabite${i}.bed; done
-</code></pre>
-
-where variable i in a for loop refers to the individuals in the dataset (1 through 27). This script will automatically assign a default color to each ancestry component (default colors for a maximum of ten ancestry components will be generated). However, users can also choose up to ten distinct colors, one for each ancestry component with the `“--ancestry"` flag (please use "python BedToLap.py --help" to see the options). The `“--ancestry"` flag requires two single arguments: 1) population ancestry name, and 2) the hex color code, which can be found on any website on the internet (e.g., computerhope.com). Again, the population ancestry must be identical to the population ancestry name present in the header of the output file from RFMIX2.
-
-In addition, to `highlight a specific gene or genomic region on a chromosome`, users can run the same command as above with additional parameters. Specifically,
-
-<pre><code>
-for i in {1..27}; do python Scripts/BedToLAP.py --bed1 Output_LAP/Mozabite${i}_hap1.bed --bed2 Output_LAP/Mozabite${i}_hap2.bed --out Output_LAP/Mozabite${i}.bed --chr 2 --from-bp 135787850 --to-bp 155837184; done
-</code></pre>
-
-where variable i in a for loop refers to the individuals (1 through 27) in the dataset; “--chr" accepts a chromosome number as an argument; --from-bp and --to-bp flags require the start and end positions of a gene or genomic region of interest in base pairs, respectively; a dashed black line, indicating a gene or genomic region of interest, will be added to the final plot generated in Step 3.
-
-**Step 3:**
-
-Generate the ancestry plot for each chromosome with LAP.py.
-In this step, we suggest that users acquaint themselves with the usage of the LAP.py script by typing:
-
-`python LAP.py --help`
-
-Basic command line:
-
-<pre><code>
-python LAP.py -I [argument] -O [argument] -B [argument]
-</code></pre>
-
-Example of usage:
-
-<pre><code>
-for i in {1..27}; do python Scripts/LAP.py -I Output_LAP/Mozabite${i}.bed -B hg38 -O Output_LAP/Mozabite${i}.pdf; done
-</code></pre>
-
-where variable i in the for loop refers to the individuals (1 through 27); the -I flag specifies the input file from Step 3; the -O flag requires a user-specified output filename with either a .pdf or .svg extension; and -B indicates the genomic build (either “hg37” or “hg38”). The output files will be in a high-quality editable “.pdf” format.
-Regardless, the resulting output file (e.g., Mozabite1_LAP.pdf) will contain ancestry-informative karyograms along with a legend of ancestry origin and the names of individuals in the dataset. Furthermore, the images in the output files will have 4k resolution (4210 x 1663) and can be edited in Adobe Illustrator or Inkscape.
+- `*.rfmix.Q`: global ancestry proportions by chromosome, used by GAP.
+- `*.msp.tsv`: local ancestry tracts, used by LAP.
+- `*.fb.tsv` and `*.sis.tsv`: additional RFMix outputs, not required by the current AncestryGrapher workflows.
 
 ---
 
-For any questions about this pipeline, please contact Alessandro Lisi (alisi@usc.edu) or Michael C. Campbell (mc44680@usc.edu)
+## 3. GAP: Global Ancestry Painting
+
+GAP converts RFMix `.rfmix.Q` files into a `.gap` table and then plots stacked global ancestry bars.
+
+Current recommended scripts:
+
+```text
+GAP/Scripts/Gap_v2.py
+GAP/Scripts/GAP_Plot.py
+```
+
+`GAP/Scripts/GAP.py` is a compatibility wrapper for the plotter.
+
+### GAP Step 1: Build a `.gap` Table
+
+From the repository root:
+
+```bash
+cd GAP
+python3 Scripts/Gap_v2.py \
+  --prefix ../Example_Dataset/RFMIX2_Output/Mozabite \
+  --chr 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 \
+  --output-dir Output_GAP \
+  --final-output Output_GAP/Mozabite.gap
+```
+
+You can also use shell expansion:
+
+```bash
+python3 Scripts/Gap_v2.py \
+  --prefix ../Example_Dataset/RFMIX2_Output/Mozabite \
+  --chr {1..22} \
+  --output-dir Output_GAP \
+  --final-output Output_GAP/Mozabite.gap
+```
+
+If `--chr` is omitted, GAP uses autosomes 1 through 22.
+
+### GAP File Discovery
+
+`--prefix` is the shared prefix before the chromosome token. For example, if files are:
+
+```text
+../Example_Dataset/RFMIX2_Output/Mozabite1_chr1.rfmix.Q
+../Example_Dataset/RFMIX2_Output/Mozabite1_chr2.rfmix.Q
+```
+
+then a prefix like this is appropriate:
+
+```bash
+--prefix ../Example_Dataset/RFMIX2_Output/Mozabite1
+```
+
+If files are multi-sample per chromosome:
+
+```text
+target_covid_kinPass_chr1.rfmix.Q
+target_covid_kinPass_chr2.rfmix.Q
+```
+
+then use:
+
+```bash
+--prefix target_covid_kinPass
+```
+
+### GAP Weighting
+
+By default, GAP combines chromosome-level RFMix Q values using hg38 chromosome-length weighting:
+
+```bash
+--weighting chrom-length
+```
+
+This is usually preferable for genome-wide global ancestry estimates because longer chromosomes contribute more genomic material. If users want every chromosome to contribute equally, use:
+
+```bash
+--weighting equal
+```
+
+### Missing Chromosomes
+
+By default, if a sample is missing one requested chromosome, GAP computes that sample's ancestry from the chromosomes available for that sample and logs a warning. To drop incomplete samples:
+
+```bash
+--require-all-chroms
+```
+
+### Sorting
+
+To sort individuals by a specific ancestry column:
+
+```bash
+python3 Scripts/Gap_v2.py \
+  --prefix ../Example_Dataset/RFMIX2_Output/Mozabite \
+  --output-dir Output_GAP \
+  --final-output Output_GAP/Mozabite.sorted.gap \
+  --sort-ancestry Middle_East
+```
+
+The ancestry name must match the RFMix Q column exactly.
+
+### Custom GAP Colors
+
+Colors can be provided as JSON:
+
+```json
+{
+  "Africa": "#a38905",
+  "Europe": "#a30d05",
+  "Middle_East": "#0e6b05"
+}
+```
+
+Use it with:
+
+```bash
+python3 Scripts/Gap_v2.py \
+  --prefix ../Example_Dataset/RFMIX2_Output/Mozabite \
+  --output-dir Output_GAP \
+  --final-output Output_GAP/Mozabite.gap \
+  --color-config colors.json
+```
+
+### GAP Step 2: Plot Global Ancestry
+
+```bash
+python3 Scripts/GAP_Plot.py \
+  --input Output_GAP/Mozabite.gap \
+  --output Output_GAP/Mozabite_GAP.pdf \
+  --title "Mozabite Global Ancestry"
+```
+
+SVG output is also supported:
+
+```bash
+python3 Scripts/GAP_Plot.py \
+  --input Output_GAP/Mozabite.gap \
+  --output Output_GAP/Mozabite_GAP.svg
+```
+
+If a `.gap` file contains values that do not sum exactly to 1 per sample, use:
+
+```bash
+--normalize
+```
+
+---
+
+## 4. LAP: Local Ancestry Painting
+
+LAP converts RFMix `.msp.tsv` local ancestry files into one final BED-like file per sample and then draws each sample as a karyotype-like ancestry painting.
+
+Current recommended scripts:
+
+```text
+LAP/Scripts/LAP_v4.py
+LAP/Scripts/Plot_LAP_v4.py
+```
+
+`LAP/Scripts/LAP.py` is a compatibility wrapper for `Plot_LAP_v4.py`.
+
+### LAP Step 1: Build Final LAP BED Files
+
+From the repository root:
+
+```bash
+cd LAP
+python3 Scripts/LAP_v4.py \
+  --prefix ../Example_Dataset/RFMIX2_Output/Mozabite \
+  --chr {1..22} \
+  --output-dir Output_LAP
+```
+
+If `--chr` is omitted, LAP uses `chr1` through `chr22`.
+
+The output directory receives one final BED-like file per sample:
+
+```text
+Output_LAP/SAMPLE.bed
+```
+
+Each final BED contains ancestry rectangles for haplotype 1 and haplotype 2. The plotter reads these records and paints each chromosome pair.
+
+### Keeping Intermediate Files
+
+By default, LAP v4 writes only the final per-sample BEDs. To keep intermediate combined MSP and haplotype BED files:
+
+```bash
+--keep-temp
+```
+
+### Parallel Processing
+
+For larger cohorts:
+
+```bash
+python3 Scripts/LAP_v4.py \
+  --prefix Input/target_chr \
+  --output-dir Output_LAP \
+  --threads 4
+```
+
+The processing is I/O-bound, so moderate thread counts are usually enough.
+
+### Merging Adjacent Windows
+
+By default, LAP merges consecutive same-ancestry RFMix windows to make the final BED cleaner and plotting faster. To keep every RFMix window:
+
+```bash
+--no-merge-adjacent
+```
+
+To merge same-ancestry windows separated by a small gap:
+
+```bash
+--max-merge-gap-bp 1000
+```
+
+### Custom LAP Colors
+
+Colors can be assigned by ancestry name:
+
+```bash
+python3 Scripts/LAP_v4.py \
+  --prefix Input/target_chr \
+  --output-dir Output_LAP \
+  --color-config colors.json
+```
+
+The JSON file should map ancestry labels to hex colors:
+
+```json
+{
+  "Europeans": "#d18311",
+  "Middle_East": "#22ba9d",
+  "North_Africa": "#839dfc",
+  "SubSaharan_Africa": "#9a5dc1"
+}
+```
+
+Legacy positional color flags are also supported:
+
+```bash
+--ancestry0 "#a32e2e" --ancestry1 "#0a0ae0"
+```
+
+### Highlighting Regions
+
+LAP can add dashed black lines to mark genes, candidate loci, GWAS regions, or any user-defined genomic interval.
+
+For one region:
+
+```bash
+python3 Scripts/LAP_v4.py \
+  --prefix Input/target_chr \
+  --output-dir Output_LAP \
+  -c chr4 \
+  --from-bp 46500000 \
+  --to-bp 46600000
+```
+
+For many regions, use `--highlight-regions` or its alias `--regions-to-highlight`:
+
+```bash
+python3 Scripts/LAP_v4.py \
+  --prefix Input/target_chr \
+  --output-dir Output_LAP \
+  --highlight-regions regions_to_highlight.tsv
+```
+
+Format:
+
+```text
+chrom  start      end        label
+chr4   46500000   46600000   locus_A
+chr6   25000000   25500000   locus_B
+17     43000000   43100000   locus_C
+```
+
+The `label` column is optional. Highlighted regions do not alter FLARE SNP annotation or LAP-VAR reporting.
+
+---
+
+## 5. LAP Step 2: Plot Local Ancestry
+
+Historical RSVG backend:
+
+```bash
+python3 Scripts/Plot_LAP_v4.py \
+  -I Output_LAP/SAMPLE.bed \
+  -B hg38.svg \
+  -O Output_LAP/SAMPLE.pdf \
+  --pdf-backend rsvg
+```
+
+Compatibility wrapper:
+
+```bash
+python3 Scripts/LAP.py \
+  -I Output_LAP/SAMPLE.bed \
+  -B hg38.svg \
+  -O Output_LAP/SAMPLE.pdf \
+  --pdf-backend rsvg
+```
+
+Direct native PDF backend:
+
+```bash
+python3 Scripts/Plot_LAP_v4.py \
+  -I Output_LAP/SAMPLE.bed \
+  -O Output_LAP/SAMPLE.native.pdf \
+  --pdf-backend native
+```
+
+The RSVG backend uses the editable SVG template (`hg38.svg`) and converts it to PDF with `rsvg-convert`. This is useful when users want the exact template shapes.
+
+The native backend draws a vector PDF directly from Python. It avoids SVG conversion and produces a simpler layer structure for Illustrator, Inkscape, or Affinity editing. It uses the same hg38 chromosome lengths and coordinate mapping as the template-based plot.
+
+### SVG-Only Output
+
+If `rsvg-convert` is not installed:
+
+```bash
+python3 Scripts/Plot_LAP_v4.py \
+  -I Output_LAP/SAMPLE.bed \
+  -B hg38.svg \
+  -O Output_LAP/SAMPLE.svg \
+  --svg-only
+```
+
+### Centromere Overlay
+
+By default, `Plot_LAP_v4.py` draws a semi-transparent, segmented grey overlay on centromere coordinates. This is intended to make centromeric regions visually explicit because local ancestry inference can be less reliable in these regions.
+
+Disable it:
+
+```bash
+--no-centromere-overlay
+```
+
+Adjust color and opacity:
+
+```bash
+--centromere-overlay-color "#707070" \
+--centromere-overlay-opacity 0.42
+```
+
+The legend includes a `Centromere` entry. The native backend also draws and labels grey acrocentric p-arm/satellite regions for chromosomes 13, 14, 15, 21, and 22. In the RSVG backend, the legend includes `Acrocentric p-arms/satellites` when the SVG template contains those grey regions.
+
+---
+
+## 6. FLARE-Aware SNP Annotation
+
+LAP v4 can integrate FLARE ancestry calls at specific variants. This allows the plot to display SNP markers colored by the FLARE haplotype ancestry and allows LAP to write per-sample variant ancestry reports.
+
+Required inputs:
+
+- RFMix `.msp.tsv` files for local ancestry tracts.
+- FLARE `.anc.vcf` or `.anc.vcf.gz` with phased `GT` and ancestry fields such as `AN1` and `AN2`.
+- A SNP list with variants of interest.
+
+Example:
+
+```bash
+python3 Scripts/LAP_v4.py \
+  --prefix Input/target_covid_kinPass_chr \
+  --output-dir Output_LAP \
+  --flare-vcf Flare_output/flare_chr4_covidanc.vcf.gz \
+  --snp-list Flare_output/snps.txt
+```
+
+Then plot:
+
+```bash
+python3 Scripts/Plot_LAP_v4.py \
+  -I Output_LAP/SAMPLE.bed \
+  -B hg38.svg \
+  -O Output_LAP/SAMPLE.pdf \
+  --pdf-backend rsvg
+```
+
+### FLARE Code Mapping
+
+RFMix and FLARE can encode ancestries in different numeric orders. LAP does not assume that RFMix ancestry code `1` means the same thing as FLARE ancestry code `1`.
+
+The mapping is:
+
+```text
+FLARE AN1/AN2 code -> FLARE ancestry name -> LAP/RFMix color for the same ancestry name
+```
+
+Therefore, as long as the ancestry names match, SNP markers are colored correctly even if numeric codes differ.
+
+### SNP List Formats
+
+One SNP per line. Examples:
+
+```text
+chr4 46567563
+chr4:46567563
+4:46567563:G:A
+```
+
+Headered tabular format is also supported:
+
+```text
+CHROM POS ID
+chr4 46567563 4:46567563:G:A
+```
+
+SNP labels in plots are assigned by the order of the SNP list:
+
+```text
+SNP1, SNP2, SNP3, ...
+```
+
+On the plot, labels are haplotype-specific:
+
+```text
+SNP1/AN1
+SNP1/AN2
+```
+
+### Sample Matching Between LAP and FLARE
+
+By default, LAP tries to match the sample name from RFMix/MSP to the sample name in the FLARE VCF.
+
+For a single FLARE sample:
+
+```bash
+--flare-sample COV.COV190_111
+```
+
+For a mapping file:
+
+```bash
+--flare-sample-map sample_map.tsv
+```
+
+Format:
+
+```text
+LAP_sample        VCF_sample
+sampleA           COV.COV190_111
+sampleB           COV.COV524_286
+```
+
+---
+
+## 7. LAP-VAR: Variant-Aware Local Ancestry Reporting
+
+When `--flare-vcf` and `--snp-list` are supplied, LAP writes a tab-delimited report for every sample:
+
+```text
+Output_LAP/SAMPLE.variant_ancestry.txt
+```
+
+The report includes:
+
+```text
+sample
+vcf_sample
+snp_label
+chrom
+pos
+variant_id
+REF
+ALT
+GT
+phased
+hap1_allele
+hap2_allele
+hap1_FLARE_ancestry
+hap2_FLARE_ancestry
+hap1_RFMix_segment_ancestry
+hap2_RFMix_segment_ancestry
+ALT_allele_haplotype
+ALT_allele_FLARE_ancestry
+ALT_allele_RFMix_ancestry
+FLARE_RFMix_concordance
+ANP1
+ANP2
+confidence
+interpretation
+```
+
+The biologically important point is haplotype-resolved interpretation. For example:
+
+```text
+GT = 0|1
+AN1 = Europeans
+AN2 = Americas
+```
+
+The ALT allele is carried on haplotype 2, so the report states that the ALT allele is embedded in an Americas local ancestry background within that analyzed individual.
+
+This does **not** imply that the mutation itself originated in that ancestry group. It reports the local ancestry of the haplotype carrying the allele in the individual being analyzed.
+
+This is useful for candidate variants, GWAS loci, rare variant follow-up, medical genetics, pharmacogenomics, and population-genetic interpretation of admixed haplotypes.
+
+---
+
+## 8. SNP Marker Plot Styling
+
+The plotter draws FLARE SNP markers as short dashed colored lines on each haplotype. Defaults are tuned to be readable on the full karyotype:
+
+```text
+--snp-line-inset-px 1.0
+--snp-line-dasharray "2 1.5"
+--snp-line-halo-width 4.0
+--snp-label-font-size 5.5
+```
+
+Useful options:
+
+```bash
+--snp-line-width 3.0
+--snp-line-dasharray "2 1.5"
+--snp-line-overhang-px 0.0
+--snp-line-inset-px 1.0
+--snp-line-halo-color "#ffffff"
+--snp-line-halo-width 4.0
+--no-snp-labels
+--snp-label-font-size 5.5
+--snp-label-offset-px 3.0
+--snp-label-halo-color "#ffffff"
+```
+
+Use an empty dasharray for solid SNP markers:
+
+```bash
+--snp-line-dasharray ""
+```
+
+---
+
+## 9. Automatic Zoom Panels for Overlapping SNPs
+
+When variants are very close, labels and dashed SNP markers can overlap in the full chromosome plot. The current plotter can automatically create secondary zoom panels:
+
+```bash
+python3 Scripts/Plot_LAP_v4.py \
+  -I Output_LAP/SAMPLE.bed \
+  -B hg38.svg \
+  -O Output_LAP/SAMPLE.pdf \
+  --pdf-backend rsvg \
+  --auto-zoom-overlaps
+```
+
+The main plot is written normally. If close SNP clusters are detected, extra native-vector PDFs are written to:
+
+```text
+Output_LAP/SAMPLE_zoom/
+```
+
+The zoom panels show a local haplotype-resolved view with:
+
+- hap1 and hap2 as enlarged local tracks
+- ancestry painting across the zoomed interval
+- dashed SNP lines colored by FLARE `AN1`/`AN2`
+- readable `SNP#/AN#` labels with leader lines
+- genomic coordinates for the zoom window
+- a small chromosome context indicator
+
+Useful options:
+
+```bash
+--zoom-output-dir DIR
+--zoom-overlap-px 18
+--zoom-padding-bp 250000
+--zoom-min-window-bp 500000
+--zoom-min-snps 2
+--zoom-max-panels 12
+```
+
+The file `LAP/Examples/mock_zoom_overlap.bed` is a small synthetic example for testing:
+
+```bash
+cd LAP
+python3 Scripts/Plot_LAP_v4.py \
+  -I Examples/mock_zoom_overlap.bed \
+  -B hg38.svg \
+  -O Output_LAP/mock_zoom_overlap.pdf \
+  --pdf-backend native \
+  --auto-zoom-overlaps
+```
+
+---
+
+## 10. Final BED Format Used by LAP
+
+The final LAP BED is a tab-delimited file. Core ancestry records use:
+
+```text
+chrom  start  end  geom_rect  color  haplotype
+```
+
+Highlighted region records use:
+
+```text
+chrom  start  end  geom_line  color  haplotype  label
+```
+
+FLARE SNP records use:
+
+```text
+chrom  start  end  geom_snp  color  haplotype  variant_id  vcf_sample  ancestry_label  ancestry_code  snp_label
+```
+
+Example:
+
+```text
+4  46567563  46567563  geom_snp  #22ba9d  1  4:46567563:G:A  COV.COV190_111  Middle_East  1  SNP1
+4  46567563  46567563  geom_snp  #9a5dc1  2  4:46567563:G:A  COV.COV190_111  SubSaharan_Africa  3  SNP1
+```
+
+---
+
+## 11. Troubleshooting
+
+### `rsvg-convert not found`
+
+Install `librsvg` or use native PDF output:
+
+```bash
+python3 Scripts/Plot_LAP_v4.py \
+  -I Output_LAP/SAMPLE.bed \
+  -O Output_LAP/SAMPLE.native.pdf \
+  --pdf-backend native
+```
+
+### SNP colors do not match expectations
+
+Check that ancestry names match between RFMix/MSP and FLARE. Numeric codes can differ; names are what matter. For example, `Europeans` in FLARE must correspond to `Europeans` in the LAP/RFMix palette.
+
+### FLARE sample names do not match LAP sample names
+
+Use:
+
+```bash
+--flare-sample SAMPLE_NAME
+```
+
+or:
+
+```bash
+--flare-sample-map sample_map.tsv
+```
+
+### Some chromosomes are blank
+
+This usually means the BED has no ancestry records for those chromosomes, or the requested chromosome list did not match the file naming convention. Check `--prefix`, `--chr`, and chromosome tokens such as `1` versus `chr1`.
+
+### GAP ancestry sums are slightly off
+
+Use `GAP_Plot.py --normalize` for plotting if needed. Also inspect missing chromosome warnings from `Gap_v2.py`.
+
+---
+
+## 12. Citation and Contact
+
+For questions about the pipeline, please contact:
+
+- Alessandro Lisi: alisi@usc.edu
+- Michael C. Campbell: mc44680@usc.edu
+
+Please cite the AncestryGrapher toolkit and the underlying local ancestry inference software used in your analysis.
